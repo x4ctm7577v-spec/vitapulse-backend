@@ -1,0 +1,238 @@
+// VitaPulse data model.
+// Every clinical record carries a clinicId — that's what makes this
+// multi-tenant: one deployed backend safely serves many separate clinics,
+// each only ever seeing its own data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Clinic {
+  id                   String   @id @default(cuid())
+  name                 String
+  createdAt            DateTime @default(now())
+
+  // Stripe subscription state — see routes/billing.js
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  subscriptionStatus   String   @default("trialing") // trialing | active | past_due | canceled
+
+  users           User[]
+  patients        Patient[]
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  formSubmissions FormSubmission[]
+  labOrders       LabOrder[]
+  charges         Charge[]
+  chartNotes      ChartNote[]
+  tasks           Task[]
+  injections      Injection[]
+  referrals       Referral[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  clinicId     String
+  clinic       Clinic   @relation(fields: [clinicId], references: [id])
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("practitioner") // owner | practitioner | staff
+  createdAt    DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model Patient {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  name      String
+  dob       String
+  mrn       String
+  allergies Json     @default("[]")
+  meds      Json     @default("[]")
+  vitals    Json     @default("{}")
+  visits    Json     @default("[]")
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  formSubmissions FormSubmission[]
+  labOrders       LabOrder[]
+  charges         Charge[]
+  chartNotes      ChartNote[]
+  tasks           Task[]
+  injections      Injection[]
+  referrals       Referral[]
+
+  @@index([clinicId])
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  date      String   // "YYYY-MM-DD"
+  time      String   // "HH:MM", 24h
+  type      String
+  reason    String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId, date])
+}
+
+model Prescription {
+  id         String   @id @default(cuid())
+  clinicId   String
+  clinic     Clinic   @relation(fields: [clinicId], references: [id])
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  medication String
+  dose       String
+  freq       String
+  qty        String
+  pharmacy   String
+  date       String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model FormSubmission {
+  id           String   @id @default(cuid())
+  clinicId     String
+  clinic       Clinic   @relation(fields: [clinicId], references: [id])
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  templateId   String
+  templateName String
+  data         Json
+  date         String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model LabOrder {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  testName  String
+  type      String   // "Lab" | "Imaging"
+  status    String   @default("Ordered") // Ordered | Resulted
+  result    String   @default("")
+  date      String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model Charge {
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  description String
+  amount      String
+  payer       String?
+  status      String   @default("Pending") // Pending | Submitted | Paid | Denied
+  date        String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model ChartNote {
+  id         String   @id @default(cuid())
+  clinicId   String
+  clinic     Clinic   @relation(fields: [clinicId], references: [id])
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  type       String   // Office visit | Telehealth | Follow-up | Annual physical
+  date       String
+  subjective String   @default("")
+  objective  String   @default("")
+  assessment String   @default("")
+  plan       String   @default("")
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  patientId String?
+  patient   Patient? @relation(fields: [patientId], references: [id])
+  title     String
+  notes     String   @default("")
+  dueDate   String   @default("")
+  status    String   @default("To do") // To do | In progress | Done
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model Injection {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  name      String
+  dose      String   @default("")
+  site      String   @default("")
+  lot       String   @default("")
+  date      String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
+
+model Referral {
+  id         String   @id @default(cuid())
+  clinicId   String
+  clinic     Clinic   @relation(fields: [clinicId], references: [id])
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  specialty  String
+  referredTo String   @default("")
+  reason     String   @default("")
+  status     String   @default("Sent") // Sent | Scheduled | Completed
+  date       String
+
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([clinicId])
+}
