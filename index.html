@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BetVision (100xBajo)</title>
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BetVision">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14161B">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#14161B;--s1:#1C1F26;--s2:#262A33;--sunk:#181B21;--line:#2C313B;--line2:#3A404C;
+ --ink:#F3F5F8;--muted:#A0A7B4;--acc:#2F8BFF;--acc-ink:#FFFFFF;--acc-soft:rgba(47,139,255,.15);
+ --gold:#FFC53D;--gold-soft:rgba(255,197,61,.13);
+ --pos:#34C77B;--neg:#F0616A;--warnt:#FFB547;--warnbg:rgba(255,181,71,.10);--focus:#7FB6FF;
+ --home:#2F8BFF;--away:#454C59;
+ --disp:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif;--text:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161B}}
+:root[data-theme="dark"]{--bg:#14161B}
+:root[data-theme="light"]{--bg:#EEF0F3;--s1:#FFFFFF;--s2:#F1F3F6;--sunk:#F6F7F9;--line:#DDE1E7;--line2:#C8CED8;--ink:#12151B;--muted:#5B6474;--acc:#1668E3;--acc-soft:rgba(22,104,227,.10);--gold:#B7800A;--gold-soft:#FFF4D6;--pos:#128A4F;--neg:#CC3B44;--warnt:#9A6400;--warnbg:#FFF6E5;--focus:#1668E3;--home:#1668E3;--away:#C4CBD6}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--text);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px 120px}
+
+/* Encabezado */
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.who{display:flex;align-items:center;gap:12px;min-width:0}
+.av{width:40px;height:40px;border-radius:8px;background:var(--acc);display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:18px;color:#fff;flex:none;letter-spacing:.02em}
+.brand{font-family:var(--disp);font-weight:700;font-size:23px;line-height:1.05;white-space:nowrap}
+.brand span{font-family:var(--text);font-weight:500;font-size:13px;color:var(--muted)}
+.stamp{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
+.stamp svg{width:14px;height:14px;stroke:var(--pos);fill:none;stroke-width:2;flex:none}
+.round{width:40px;height:40px;border-radius:8px;border:1px solid var(--line);background:var(--s1);display:grid;place-items:center;cursor:pointer;flex:none}
+.round svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
+
+/* Superficies */
+.g,.panel,.hero,.tile,.info,details.cal,.reco,.cta{background:var(--s1);border:1px solid var(--line)}
+.info{border-radius:8px;padding:10px 14px;font-size:14px;color:var(--muted);margin:0 0 14px}
+.info b{color:var(--ink)}
+.panel{border-radius:10px;padding:16px;margin:12px 0}
+.panel h2,.reco h2,.cta h2,dialog h2{font-family:var(--disp);font-weight:700;font-size:21px;line-height:1.15;margin:0 0 6px}
+.note{font-size:13.5px;color:var(--muted);font-weight:400;line-height:1.5}
+
+/* Recomendaciones */
+.reco{border-radius:10px;padding:16px 16px 12px;margin:0 0 14px}
+.reco h2{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.reco h2 span{font-family:var(--text);font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--acc-soft);color:var(--acc)}
+.rb{padding:14px 0 6px;border-top:1px solid var(--line);margin-top:12px}
+.rb:first-of-type{border-top:0;margin-top:4px;padding-top:6px}
+.rd{font-family:var(--disp);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.rl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;font-weight:600;border-bottom:1px solid var(--line)}
+.rl:last-of-type{border-bottom:0}
+.rl b{font-family:var(--disp);font-weight:700;font-size:21px}
+.rs{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:10px 0 4px;background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.rs .big{font-size:34px}
+.rf{font-family:var(--disp);font-weight:700;font-size:26px}
+.reco .add{width:100%;margin-top:10px;padding:12px}
+
+/* Medidor del parlay */
+.hero{display:block;width:100%;text-align:left;border-radius:10px;padding:14px 16px;cursor:pointer;margin-bottom:12px}
+.hl{font-size:13px;color:var(--muted);font-weight:600}
+.scale{display:flex;justify-content:space-between;align-items:flex-end;margin:6px 0 8px}
+.sn{font-weight:500;font-size:12px;color:var(--muted);width:30px}
+.big{font-family:var(--disp);font-weight:700;font-size:40px;line-height:1;color:var(--ink)}
+.ruler{position:relative;height:18px;display:flex;justify-content:space-between;align-items:flex-end}
+.ruler span{width:1px;background:var(--line2)}
+.ruler span:nth-child(5n+1){background:var(--muted)}
+.ruler i{position:absolute;bottom:-6px;width:3px;height:26px;border-radius:1px;background:var(--acc);transform:translateX(-50%)}
+.hint{font-size:13px;color:var(--muted);margin-top:12px}
+
+/* Ligas */
+.tiles{display:flex;gap:8px;margin:18px 0 12px;overflow-x:auto;scrollbar-width:none}
+.tiles::-webkit-scrollbar{display:none}
+.tile{border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;flex:none}
+.tile svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tile .tx{display:flex;align-items:baseline;gap:6px}
+.tile b{font-weight:600;font-size:14px}
+.tile small{color:var(--muted);font-size:12.5px}
+.tile[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.tile[aria-pressed="true"] small{color:rgba(255,255,255,.8)}
+.tile:disabled{cursor:default}.tile.soon svg{opacity:.55}
+.cd{font-size:12px;font-weight:600;color:var(--acc)}
+.tile.live{flex:1 1 100%}
+.lb{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--acc);background:var(--acc-soft);border-radius:4px;padding:1px 7px;vertical-align:2px}
+.lb i{width:6px;height:6px;border-radius:50%;background:var(--neg)}
+details.cal{border-radius:10px;padding:0 16px;margin:0 0 16px}
+details.cal summary{cursor:pointer;font-weight:600;padding:13px 0;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.cal summary::-webkit-details-marker{display:none}
+details.cal summary::after{content:"+";color:var(--muted);font-size:18px}
+details.cal[open] summary::after{content:"−"}
+.cal h3{font-family:var(--disp);font-size:16px;font-weight:700;margin:12px 0 4px}
+.ev2{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ev2 span:last-child{color:var(--muted);text-align:right}
+.ev2.now span:first-child{font-weight:600}.ev2.now span:last-child{color:var(--acc);font-weight:600}
+
+/* Controles */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 12px;font-size:13px;color:var(--muted);font-weight:500}
+.row label{display:flex;flex-direction:column;gap:4px;flex:1;min-width:140px}
+select,input[type=text],input[type=number],input[type=email],input[type=password]{color:var(--ink);-webkit-text-fill-color:var(--ink);background:var(--s2);border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-weight:500}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+select option{color:#152033}
+h2.day{font-family:var(--disp);font-weight:700;font-size:18px;margin:24px 0 10px;display:flex;align-items:center;gap:10px;color:var(--muted)}
+h2.day::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* Partidos */
+.g{border-radius:10px;padding:12px 14px 12px;margin:0 0 10px}
+.gh{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:500;color:var(--muted);padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+.gh .live{color:var(--neg);font-weight:600}
+.side{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:8px 0}
+.side+.side{border-top:1px solid var(--line)}
+.side .nm{font-weight:600;font-size:15.5px}
+.side .nm i{font-style:normal;font-weight:500;color:var(--muted);font-size:12.5px}
+.side .pc{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1}
+.ab{display:inline-grid;place-items:center;min-width:42px;height:22px;margin-right:8px;padding:0 6px;border-radius:4px;font-size:11.5px;font-weight:600;color:var(--ink);background:var(--s2);border:1px solid var(--line2);vertical-align:1px}
+.side:first-of-type .ab{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{display:flex;height:4px;border-radius:2px;overflow:hidden;background:var(--sunk);gap:2px}
+.bh{background:var(--home)}.ba{background:var(--away)}
+.ctl{grid-column:1/-1;display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:500}
+.ctl label{display:flex;align-items:center;gap:6px}
+.ctl input{width:86px}
+.ev{font-weight:600}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.chk{position:relative;width:36px;height:36px;border-radius:6px;border:1px solid var(--line2);background:var(--s2);display:grid;place-items:center;cursor:pointer;margin-left:auto}
+.chk svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.chk::before{content:"+";font-size:20px;font-weight:500;color:var(--muted);position:absolute}
+.chk[aria-pressed="true"]{background:var(--acc);border-color:var(--acc)}
+.chk[aria-pressed="true"]::before{content:""}
+.chk[aria-pressed="true"] svg{opacity:1}
+.recent{font-size:13px;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+.none{color:var(--muted);font-size:14px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.kpi{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi .l{font-size:12.5px;font-weight:500;color:var(--muted)}
+.kpi .big{font-size:26px;margin-top:2px}
+.leg{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.leg:last-child{border-bottom:0}
+.leg button[data-rm]{background:none;border:1px solid var(--line2);border-radius:6px;padding:4px 10px;color:var(--neg);cursor:pointer;font-size:13px;font-weight:600}
+
+/* Botones */
+.add{border:0;background:var(--acc);color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer;font-weight:600;margin-top:4px}
+.add:hover{filter:brightness(1.08)}
+.add:active{transform:translateY(1px)}
+.btn2{border:1px solid var(--line2);background:var(--s2);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.reg{border:1px solid var(--line2);background:var(--s2);border-radius:6px;padding:5px 11px;cursor:pointer;font-weight:600;font-size:13px}
+.bet{display:inline-flex;align-items:center;border-radius:6px;padding:5px 11px;font-weight:600;font-size:13px;text-decoration:none;background:var(--acc-soft);color:var(--acc);border:1px solid transparent}
+.link{background:none;border:0;color:var(--acc);cursor:pointer;font-weight:600;padding:0;text-decoration:underline;text-underline-offset:2px}
+.lock{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--muted)}
+.sug{color:var(--acc);font-weight:600}
+.warn{background:var(--warnbg);border:1px solid var(--line);border-left:3px solid var(--warnt);border-radius:6px;padding:10px 12px;font-size:14px;margin:10px 0}
+.warn b,.warnt{color:var(--warnt)}
+ul{padding-left:18px;margin:6px 0}li{margin:5px 0}li::marker{color:var(--muted)}
+.status{font-weight:600}.status.won{color:var(--pos)}.status.lost{color:var(--neg)}.status.open,.status.push{color:var(--muted)}
+
+/* Barra inferior */
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--s1);border-top:1px solid var(--line)}
+nav button{flex:1;max-width:110px;background:none;border:0;border-radius:6px;padding:6px 2px;font-size:11.5px;font-weight:500;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button[aria-selected="true"]{color:var(--acc);font-weight:600}
+nav button[aria-selected="true"]::before{content:"";position:absolute;top:-7px;left:25%;right:25%;height:2px;background:var(--acc);border-radius:0 0 2px 2px}
+nav .n{position:absolute;top:0;left:calc(50% + 7px);min-width:17px;border-radius:9px;background:var(--acc);color:#fff;font-size:10.5px;padding:0 5px;font-weight:600;line-height:17px}
+.askfab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:6;border:1px solid var(--line2);border-radius:8px;padding:10px 14px;font-weight:600;font-size:14px;color:var(--ink);background:var(--s2);box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer}
+:root[data-theme="light"] .askfab{box-shadow:0 6px 18px rgba(20,32,51,.15)}
+@media (prefers-reduced-motion:no-preference){.lb i{animation:pulse 1.4s ease-in-out infinite}@keyframes pulse{50%{opacity:.3}}.chk svg{transition:opacity .12s}}
+
+/* Formularios y diálogos */
+.form{display:flex;flex-direction:column;gap:10px}
+.form input[type=email],.form input[type=password],.form input[type=number],.form input[type=text]{width:100%}
+.form label.ck{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.form label.ck input{width:18px;height:18px;accent-color:var(--acc);flex:none;margin-top:2px}
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--s1);color:var(--ink);padding:18px;width:min(92vw,420px)}
+dialog::backdrop{background:rgba(6,10,16,.6)}
+.drow{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);font-weight:600;padding:9px 16px;border-radius:8px;z-index:20;display:none;max-width:90vw;text-align:center}
+.cta{border-radius:10px;padding:16px;margin:0 0 14px;border-top:3px solid var(--acc)}
+.cta ul{margin:8px 0 12px}
+.cta .add{width:100%;padding:12px}
+.why{border-top:1px solid var(--line);padding:12px 0}
+.wt{font-family:var(--disp);font-weight:700;font-size:17px;margin-bottom:8px}
+.wc{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px}
+.wc>div{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px}
+.wl{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.wl.bv{color:var(--acc)}
+input::placeholder,textarea::placeholder{color:var(--muted);-webkit-text-fill-color:var(--muted);opacity:1}
+input:-webkit-autofill,input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px var(--s2) inset;caret-color:var(--ink)}
+.pw{position:relative}.pw input{padding-right:46px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;font-size:18px;cursor:pointer;padding:6px}
+.ck span{display:block}
+
+/* Ficha y selección */
+.ficha{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
+.ficha summary{cursor:pointer;font-weight:600;color:var(--ink);padding:6px 0}
+.ficha summary::marker{color:var(--muted)}
+.fx{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0}
+.ficha ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+
+/* Chat */
+#chat{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.bub{max-width:90%;padding:11px 13px;border-radius:10px;font-size:14.5px;line-height:1.55}
+.bub.user{align-self:flex-end;background:var(--acc);color:#fff;border-bottom-right-radius:3px}
+.bub.assistant{align-self:flex-start;background:var(--s2);border:1px solid var(--line);border-bottom-left-radius:3px}
+.sugg{display:flex;flex-direction:column;gap:8px}.sugg .btn2{text-align:left}
+.askbar{display:flex;gap:8px;align-items:flex-end;margin-top:8px}
+.askbar textarea{flex:1;resize:none;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--ink);-webkit-text-fill-color:var(--ink);font:inherit}
+.askbar .add{margin:0}
+
+/* Estilo casa de apuestas: cuotas en botones, encabezados de liga, boleto flotante */
+header.top{position:sticky;top:0;z-index:4;background:var(--bg);margin:0 -16px 12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.av{border-radius:6px;background:var(--gold);color:#14161B}
+.tiles{position:sticky;top:64px;z-index:3;background:var(--bg);margin:0 -16px 10px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.tile{border-radius:999px;padding:7px 14px;background:var(--s2);border-color:transparent}
+.tile[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tile[aria-pressed="true"] small{color:var(--bg);opacity:.7}
+.g{border-radius:8px;padding:0;overflow:hidden}
+.gh{background:var(--s2);margin:0;padding:8px 12px;border-bottom:1px solid var(--line);font-weight:600;color:var(--muted)}
+.side{grid-template-columns:minmax(0,1fr) auto 84px;padding:10px 12px}
+.side .pc{font-size:22px;text-align:right}
+.side .pc small{display:block;font-family:var(--text);font-size:10.5px;font-weight:500;color:var(--muted);margin-top:2px}
+.odds{grid-row:1;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:48px;border-radius:6px;border:1px solid var(--line2);background:var(--s2);color:var(--ink);font-family:var(--disp);font-weight:700;font-size:19px;cursor:pointer;line-height:1.05}
+.odds small{font-family:var(--text);font-size:10px;font-weight:500;color:var(--muted);max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.odds:hover{border-color:var(--acc)}
+.odds[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.odds[aria-pressed="true"] small{color:rgba(255,255,255,.85)}
+.side .bar,.side .note,.side .ctl{grid-column:1/-1}
+.bar{height:3px}
+.ctl{font-size:12.5px}
+.g>details.ficha{margin:0;padding:6px 12px 8px}
+.g>details.ficha+details.ficha{border-top:1px solid var(--line)}
+.reco{border-radius:8px;padding:0;overflow:hidden}
+.reco h2{background:var(--s2);margin:0;padding:10px 14px;font-size:19px;border-bottom:1px solid var(--line)}
+.reco h2 span{background:var(--gold-soft);color:var(--gold)}
+.reco>.rb,.reco>p,.reco>div{margin-left:14px;margin-right:14px}
+.reco>p.note:last-child{margin-bottom:12px}
+.rd{color:var(--gold)}
+.rs{border-radius:6px}
+.add{border-radius:6px;background:var(--acc)}
+.hero{border-radius:8px;border-left:3px solid var(--acc)}
+.cta{border-top-color:var(--gold)}
+nav button[aria-selected="true"]{color:var(--ink)}
+nav button[aria-selected="true"]::before{background:var(--gold)}
+nav .n{background:var(--gold);color:#14161B}
+.askfab{border-radius:999px;background:var(--gold);color:#14161B;border-color:var(--gold)}
+.lb{background:var(--gold-soft);color:var(--gold)}
+
+.chips2{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 2px}
+.chips2::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.chip.r{background:var(--warnbg);border-color:transparent;color:var(--warnt)}
+
+/* ---------- Tour de bienvenida (primera vez) ---------- */
+#tour{outline:none;position:fixed;inset:0;z-index:50;background:#0E1014;color:#F3F5F8;display:none;flex-direction:column}
+#tour.show{display:flex}
+#tour .tk{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+#tour .tk::-webkit-scrollbar{display:none}
+#tour .ts{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:calc(48px + env(safe-area-inset-top,0px)) 28px 24px;gap:22px;position:relative;overflow:hidden}
+#tour .ts::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(255,197,61,.16),transparent 65%);top:-140px;right:-200px;pointer-events:none}
+#tour .ts:nth-child(even)::before{background:radial-gradient(circle,rgba(76,155,255,.16),transparent 65%);left:-220px;right:auto;top:auto;bottom:-160px}
+#tour h2{font-family:var(--disp);font-size:38px;line-height:1.02;font-weight:700;margin:0;max-width:340px}
+#tour h2 em{font-style:normal;color:#FFC53D}
+#tour p.tl{font-size:17px;line-height:1.45;color:#A8AFBC;margin:0;max-width:320px}
+#tour .stage{width:100%;max-width:340px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#tour .tb{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px calc(18px + env(safe-area-inset-bottom,0px))}
+#tour .dots{display:flex;gap:7px}
+#tour .dots i{width:7px;height:7px;border-radius:4px;background:#3A404C;transition:width .25s,background .25s}
+#tour .dots i.on{width:22px;background:#FFC53D}
+#tour .skip{background:none;border:0;color:#A8AFBC;font-weight:600;padding:10px 4px;cursor:pointer}
+#tour .next{border:0;background:#FFC53D;color:#14161B;font-weight:700;border-radius:999px;padding:13px 26px;cursor:pointer;font-size:15px}
+/* piezas de demostración */
+.bvlogo{width:96px;height:96px;border-radius:24px;background:#FFC53D;color:#14161B;display:grid;place-items:center;font-family:var(--disp);font-size:46px;font-weight:700;box-shadow:0 18px 50px rgba(255,197,61,.25)}
+.mrow{width:100%;display:flex;align-items:center;gap:12px;background:#1E2129;border:1px solid #2C313B;border-radius:14px;padding:14px 16px;text-align:left}
+.mrow .nm{flex:1;font-weight:600}
+.mrow .pc{font-family:var(--disp);font-size:30px;font-weight:700}
+.mbar{width:100%;height:8px;border-radius:4px;background:#272B34;overflow:hidden}
+.mbar i{display:block;height:100%;width:0;background:#4C9BFF;border-radius:4px}
+.modd{min-width:84px;border:1px solid #3A404C;background:#262A33;color:#F3F5F8;border-radius:10px;padding:8px 10px;font-family:var(--disp);font-size:22px;font-weight:700;display:flex;flex-direction:column;align-items:center;line-height:1.05}
+.modd small{font-family:var(--text);font-size:10px;color:#A8AFBC;font-weight:500}
+.modd.sel{background:#2F8BFF;border-color:#2F8BFF}
+.mval{font-weight:700;font-size:15px;padding:4px 10px;border-radius:999px}
+.mval.g{background:rgba(61,203,133,.15);color:#3DCB85}.mval.r{background:rgba(255,122,128,.15);color:#FF7A80}
+.mpill{width:100%;display:flex;align-items:center;gap:14px;background:#1E2129;border-radius:14px;padding:14px 16px;text-align:left;border-left:5px solid}
+.mpill b{font-family:var(--disp);font-size:22px}
+.mpill span{color:#A8AFBC;font-size:14px}
+.mchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mchip{background:#1E2129;border:1px solid #2C313B;border-radius:999px;padding:8px 13px;font-size:14px;font-weight:500}
+.mbub{max-width:85%;padding:12px 15px;border-radius:16px;font-size:15px;line-height:1.4;text-align:left}
+.mbub.me{align-self:flex-end;background:#2F8BFF;border-bottom-right-radius:4px}
+.mbub.ai{align-self:flex-start;background:#262A33;border-bottom-left-radius:4px}
+.mslip{display:flex;align-items:center;gap:10px;background:#FFC53D;color:#14161B;border-radius:999px;padding:9px 16px;font-weight:700}
+.mslip i{font-style:normal;background:#14161B;color:#FFC53D;border-radius:999px;padding:1px 9px}
+.mrec{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.mrec div{background:#1E2129;border-radius:14px;padding:16px}
+.mrec b{display:block;font-family:var(--disp);font-size:34px}
+.big10{font-family:var(--disp);font-size:72px;font-weight:700;color:#FFC53D;line-height:1}
+@media (prefers-reduced-motion:no-preference){
+ #tour .ts .an{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+ #tour .ts.on .an{opacity:1;transform:none}
+ #tour .ts.on .an:nth-child(2){transition-delay:.12s}#tour .ts.on .an:nth-child(3){transition-delay:.24s}#tour .ts.on .an:nth-child(4){transition-delay:.36s}#tour .ts.on .an:nth-child(5){transition-delay:.48s}#tour .ts.on .an:nth-child(6){transition-delay:.6s}
+ #tour .ts.on .mbar i{transition:width 1.1s .4s cubic-bezier(.2,.8,.2,1)}
+ #tour .ts.on .bvlogo{animation:bvpop .7s cubic-bezier(.2,1.4,.4,1) both}
+ @keyframes bvpop{from{transform:scale(.5);opacity:0}}
+ #tour .ts.on .modd.tap{animation:tap 2.4s 1s infinite}
+ @keyframes tap{0%,30%{background:#262A33;border-color:#3A404C}40%,85%{background:#2F8BFF;border-color:#2F8BFF}100%{background:#262A33}}
+ #tour .ts.on .mslip i::after{content:""}
+}
+#tour .ts.on .mbar i{width:var(--w)}
+</style>
+</head>
+<body>
+<div id="tour" role="dialog" aria-modal="true" aria-label="Bienvenida a BetVision">
+ <div class="tk" id="tourTrack">
+  <section class="ts">
+   <div class="bvlogo an">BV</div>
+   <h2 class="an">Apuesta con <em>datos</em>, no con corazonada.</h2>
+   <p class="tl an">BetVision revisa cada partido por ti y te dice qué tan probable es y si la cuota paga lo justo.</p>
+  </section>
+  <section class="ts">
+   <div class="stage">
+    <div class="mrow an"><span class="nm">Houston Astros</span><span class="pc">58%</span></div>
+    <div class="mbar an"><i style="--w:58%"></i></div>
+    <div class="mrow an"><span class="nm">Chicago White Sox</span><span class="pc" style="color:#A8AFBC">42%</span></div>
+   </div>
+   <h2 class="an">Mira quién tiene <em>más chance</em></h2>
+   <p class="tl an">Cada equipo trae su probabilidad real de ganar, calculada con todas las casas de apuestas.</p>
+  </section>
+  <section class="ts">
+   <div class="stage">
+    <div class="mrow an"><span class="nm">Red Sox</span><span class="mval g">Valor +3%</span><span class="modd"><small>BetMGM</small>+125</span></div>
+    <div class="mrow an"><span class="nm">Yankees</span><span class="mval r">Valor −5%</span><span class="modd"><small>Hard Rock</small>−145</span></div>
+   </div>
+   <h2 class="an">¿La cuota <em>paga bien</em>?</h2>
+   <p class="tl an"><b style="color:#3DCB85">Verde</b>: la casa te paga de más. <b style="color:#FF7A80">Rojo</b>: te paga de menos. Busca el verde.</p>
+  </section>
+  <section class="ts">
+   <div class="stage">
+    <div class="mpill an" style="border-color:#3DCB85"><b>🟢 Apuesta</b><span>Hay ventaja clara</span></div>
+    <div class="mpill an" style="border-color:#FFC53D"><b>🟡 Con cuidado</b><span>Ventaja con dudas</span></div>
+    <div class="mpill an" style="border-color:#6B7280"><b>⚪ Mejor no</b><span>La cuota no paga</span></div>
+   </div>
+   <h2 class="an">Sigue el <em>semáforo</em></h2>
+   <p class="tl an">Cada partido trae su Selección BetVision, aunque sea el underdog. Si sale blanco, no forces la apuesta.</p>
+  </section>
+  <section class="ts">
+   <div class="stage"><div class="mchips">
+    <span class="mchip an">⚾ Mejor abridor</span><span class="mchip an">😮‍💨 Cerrador cansado</span><span class="mchip an">🔥 Juega por su vida</span><span class="mchip an">🍀 Ha tenido suerte</span><span class="mchip an">🌧️ Lluvia</span><span class="mchip an">💸 La línea se mueve</span>
+   </div><div class="big10 an" style="margin-top:14px">10,000</div><p class="tl an" style="font-size:14px">simulaciones de cada juego</p></div>
+   <h2 class="an">Lo importante, <em>en un vistazo</em></h2>
+   <p class="tl an">Pitcheo, cansancio, clima y suerte en etiquetas cortas. Toca un partido para ver la ficha completa.</p>
+  </section>
+  <section class="ts">
+   <div class="stage">
+    <div class="mrow an"><span class="nm">Padres</span><span class="modd tap"><small>DraftKings</small>−130</span></div>
+    <div class="mslip an">Tu parlay <i>3</i> +437</div>
+   </div>
+   <h2 class="an">Toca la cuota y <em>arma tu parlay</em></h2>
+   <p class="tl an">O usa los combos del día: 🧠 BetVision, 🛡️ más seguro, 🎲 sorpresa y 🔄 rebote, con un solo toque.</p>
+  </section>
+  <section class="ts">
+   <div class="stage" style="align-items:stretch">
+    <div class="mbub me an">¿Mi boleto de 4 patas está bien?</div>
+    <div class="mbub ai an">Te falta valor en los Red Sox. Quédate con 2 patas: pegas 23 de cada 100 en vez de 5.</div>
+   </div>
+   <h2 class="an">Pregúntale <em>como a un amigo</em></h2>
+   <p class="tl an">Toca 💬 Pregúntale y revisa tu boleto. También busca lesiones y noticias del día.</p>
+  </section>
+  <section class="ts">
+   <div class="stage"><div class="mrec">
+    <div class="an"><span style="color:#3DCB85">✅ Ganadas</span><b>Se guardan</b></div>
+    <div class="an"><span style="color:#FF7A80">❌ Perdidas</span><b>También</b></div>
+   </div></div>
+   <h2 class="an">Aquí <em>nada se borra</em></h2>
+   <p class="tl an">En Récord ves todas nuestras jugadas, buenas y malas. Ninguna apuesta es segura: juega responsable, esto es 100 pa bajo.</p>
+  </section>
+ </div>
+ <div class="tb">
+  <button class="skip" id="tourSkip">Saltar</button>
+  <div class="dots" id="tourDots" aria-hidden="true"></div>
+  <button class="next" id="tourNext">Siguiente</button>
+ </div>
+</div>
+
+<div class="wrap">
+ <header class="top"><div class="who"><span class="av" aria-hidden="true">BV</span><div><div class="brand">BetVision <span>(100xBajo)</span></div>
+ <div class="stamp" id="stamp">Cargando datos…</div></div></div>
+ <button class="round" data-tab="guide" aria-label="Guía, términos y ajustes"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button></header>
+ <main id="view"><div class="panel"><p>Cargando…</p></div></main>
+</div>
+<nav role="tablist">
+ <button role="tab" data-tab="games" aria-selected="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Partidos</button>
+ <button role="tab" data-tab="parlay" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="5.5" y="6.5" width="3.5" height="11" rx="1"/><rect x="15" y="6.5" width="3.5" height="11" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><path d="M9 12h6"/></svg>Parlay<span class="n" id="legN">0</span></button>
+ <button role="tab" data-tab="record" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Récord</button>
+ <button role="tab" data-tab="bets" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>Apuestas</button>
+ <button role="tab" data-tab="account" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Cuenta</button>
+ 
+</nav>
+<button class="askfab" data-tab="ask" aria-label="Pregúntale a BetVision">💬 Pregúntale</button>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s);
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=p=>(p*100).toFixed(1).replace('.0','')+'%';
+const sg=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
+const us=d=>d>=2?'+'+Math.round((d-1)*100):'-'+Math.round(100/(d-1));
+const money=x=>(x<0?'-$':'$')+Math.abs(x).toFixed(2);
+const dec=t=>{const x=parseFloat(String(t).replace(',','.'));if(isNaN(x))return null;if(x>=100)return 1+x/100;if(x<=-100)return 1+100/Math.abs(x);return x>1?x:null};
+const short=n=>{const w=n.split(' ');return w.length>1?w[w.length-1]:n};
+const when=iso=>{const d=new Date(iso);return d.toLocaleDateString('es',{weekday:'short',day:'numeric',month:'short'})+', '+d.toLocaleTimeString('es',{hour:'numeric',minute:'2-digit'})};
+const dayKey=iso=>new Date(iso).toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
+const ago=iso=>{const m=Math.round((Date.now()-new Date(iso))/60000);return m<1?'hace un momento':m<60?`hace ${m} min`:`hace ${Math.round(m/60)} h`};
+function es(m){m=String(m||'');const M=[[/already registered|already been registered/i,'Ese correo ya tiene cuenta. Toca "Entra aquí".'],[/invalid login credentials/i,'Correo o contraseña incorrectos.'],[/email not confirmed/i,'Primero confirma tu correo: revisa tu bandeja de entrada (y la de spam).'],[/password should be at least/i,'La contraseña debe tener al menos 6 caracteres.'],[/rate limit|too many/i,'Demasiados intentos. Espera unos minutos y vuelve a intentar.'],[/invalid.*email|unable to validate email/i,'Ese correo no parece válido.'],[/failed to fetch|network/i,'No hay conexión con el servidor. Revisa tu internet y vuelve a intentar.'],[/invalid path/i,'Error de configuración del servidor (SUPABASE_URL).']];for(const [r,t] of M)if(r.test(m))return t;return m}
+function toast(t){t=es(t);const el=$('#toast');el.textContent=t;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',3500)}
+
+let CFG={},SB=null,SESSION=null,ME=null,DATA=null,BETS=null,LEGS=ls.get('bv-legs',[]);
+const S={tab:'games',lg:'all',sort:'time',stake:10,auth:'signup'};
+const premium=()=>!!(DATA&&DATA.premium);
+
+async function api(path,opt={}){const h={'Content-Type':'application/json'};if(SESSION)h.Authorization='Bearer '+SESSION.access_token;
+  const r=await fetch(path,{...opt,headers:h});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'Error'),{status:r.status});return j}
+async function loadData(){try{DATA=await api('/api/data')}catch(e){DATA={games:[],errors:['No se pudo conectar con el servidor.']}}
+  LEGS=LEGS.filter(k=>DATA.games.some(g=>g.id===k.split('|')[0]));render()}
+async function refreshAll(){ME=null;BETS=null;REC=null;if(SESSION){try{ME=await api('/api/me')}catch(e){}}await loadData()}
+async function init(){
+  setTimeout(()=>{if(!DATA)$('#view').innerHTML='<div class="panel"><h2>Despertando BetVision…</h2><p class="note">La primera carga del día puede tardar hasta un minuto mientras el servidor arranca. No cierres la página.</p></div>'},2500);
+  try{CFG=await (await fetch('/api/config')).json()}catch(e){}
+  if(CFG.supabaseUrl&&window.supabase){SB=window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnon);
+    const {data}=await SB.auth.getSession();SESSION=data.session;
+    SB.auth.onAuthStateChange((ev,s)=>{const changed=(s&&s.access_token)!==(SESSION&&SESSION.access_token);SESSION=s;if(changed&&ev!=='TOKEN_REFRESHED')refreshAll()})}
+  const q=new URLSearchParams(location.search).get('pago');
+  await refreshAll();
+  if(q){history.replaceState(null,'','/');if(q==='ok'){toast('¡Listo! Tu prueba Premium empezó.');setTimeout(refreshAll,4000)}else toast('Pago cancelado.')}
+  setInterval(loadData,5*60*1000)}
+
+const STATES={AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'Washington D. C.',FL:'Florida',GA:'Georgia',HI:'Hawái',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Luisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Míchigan',MN:'Minnesota',MS:'Misisipi',MO:'Misuri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'Nuevo Hampshire',NJ:'Nueva Jersey',NM:'Nuevo México',NY:'Nueva York',NC:'Carolina del Norte',ND:'Dakota del Norte',OH:'Ohio',OK:'Oklahoma',OR:'Oregón',PA:'Pensilvania',RI:'Rhode Island',SC:'Carolina del Sur',SD:'Dakota del Sur',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'Virginia Occidental',WI:'Wisconsin',WY:'Wyoming'};
+const myState=()=>(ME&&ME.state)||ls.get('bv-state','');
+const myBookKey=()=>(ME&&ME.book)||ls.get('bv-book','')||(myState()==='FL'?'hardrockbet':'');
+function allBooks(){const m={};(DATA&&DATA.games||[]).forEach(g=>g.outcomes.forEach(o=>Object.entries(o.byBook||{}).forEach(([k,v])=>m[k]=v.t)));return Object.entries(m).sort((a,b)=>a[1].localeCompare(b[1]))}
+function quote(o){const bb=o.byBook||{};const k=myBookKey();if(k&&bb[k])return{key:k,title:bb[k].t,price:bb[k].pr,link:bb[k].l,mine:true};
+ let best=null;for(const [kk,v] of Object.entries(bb))if(!best||v.pr>best.price)best={key:kk,title:v.t,price:v.pr,link:v.l,mine:false};
+ return best||{key:'',title:o.best?o.best.book:'',price:o.myPrice||(o.best&&o.best.price),link:null,mine:false}}
+function goLink(q){const aff=(CFG.affiliates||[]).some(a=>a.key===q.key);if(q.link)return '/go?b='+encodeURIComponent(q.key)+'&u='+encodeURIComponent(q.link);return aff?'/go?b='+encodeURIComponent(q.key):null}
+function recBooks(){const st=myState();return (CFG.affiliates||[]).filter(a=>!a.states||!a.states.length||a.states.includes('*')||(st&&a.states.includes(st)))}
+function booksPanel(){const st=myState();const list=st?recBooks():[];const affs=CFG.affiliates||[];
+ return `<div class="panel" id="casas"><h2>Casas recomendadas</h2>
+ <div class="row"><label>Tu estado<select id="stateSel"><option value="">Elige tu estado</option>${Object.entries(STATES).map(([k,v])=>`<option value="${k}" ${st===k?'selected':''}>${v}</option>`).join('')}</select></label></div>
+ ${!st?'<p class="note">Elige tu estado para ver las casas legales donde vives.</p>':!affs.length?'<p class="note">Pronto verás aquí las casas recomendadas.</p>':!list.length?'<p class="note">Todavía no tenemos casas recomendadas para tu estado. Recuerda apostar solo en casas con licencia donde vives.</p>':
+ list.map(a=>`<div class="leg"><span><b>${esc(a.name)}</b>${a.offer?`<br><span class="note">${esc(a.offer)}</span>`:''}</span><a class="bet" href="/go?b=${encodeURIComponent(a.key)}" target="_blank" rel="noopener">Abrir cuenta ↗</a></div>`).join('')}
+ <div class="row" style="margin-top:14px"><label>Casa donde apuestas<select id="bookSel"><option value="">La de mejor cuota en cada partido</option>${allBooks().map(([k,t])=>`<option value="${k}" ${myBookKey()===k?'selected':''}>${esc(t)}</option>`).join('')}</select></label></div>
+ <p class="note">BetVision calcula el valor con la cuota de la casa que elijas. Usa solo casas con licencia en tu estado y solo si tienes 21 años o más.</p>
+ ${affs.length?'<p class="note"><b>Aviso:</b> BetVision puede recibir una comisión si abres una cuenta desde estos enlaces. Eso no cambia las probabilidades ni el valor que te mostramos.</p>':''}</div>`}
+async function savePref(k,v){ls.set(k==='state'?'bv-state':'bv-book',v);if(ME){ME[k]=v;try{await api('/api/me',{method:'PUT',body:JSON.stringify({[k]:v})})}catch(e){}}render()}
+
+function kelly(p,d){const b=d-1,f=(b*p-(1-p))/b;return f>0?Math.min(f/4,.02):0}
+function sugStake(o){if(!ME||!ME.bankroll)return null;const d=quote(o).price;const s=ME.bankroll*kelly(o.pBV!=null?o.pBV:o.p,d);return s>0?s:null}
+function legs(){if(!DATA||!premium())return[];return LEGS.map(k=>{const [gid,i]=k.split('|');const g=DATA.games.find(x=>x.id===gid);if(!g)return null;const o=g.outcomes[+i];return o&&o.best&&new Date(g.start).getTime()>Date.now()?{k,g,o,price:quote(o).price}:null}).filter(Boolean)}
+
+/* ----- vistas ----- */
+function cta(){const t=CFG.trialDays||7;return `<section class="cta"><h2>BetVision Premium</h2><p class="note" style="margin:0">Desbloquea lo que te ayuda a decidir con datos:</p>
+ <ul><li>Valor de cada cuota y cuota justa</li><li>Parlays recomendados con cuotas en vivo</li><li>Registro de tus apuestas con valor de cierre (CLV)</li><li>Tamaño de apuesta sugerido según tu presupuesto</li></ul>
+ ${ME?`<p style="margin:0 0 10px"><b>Tu prueba gratis terminó.</b> Suscríbete para seguir usando Premium.</p><button class="add" data-act="subscribe">Suscribirme por ${esc(CFG.price||'$99 al mes')}</button>`:`<button class="add" data-act="subscribe">Probar ${t} días gratis, sin tarjeta</button>`}<p style="text-align:center;margin:10px 0 0"><button class="link" data-tab="record">Ver nuestro récord completo</button> · <button class="link" data-tab="guide">¿Por qué BetVision y no un influencer?</button></p><p class="note" style="text-align:center;margin:8px 0 0">${ME?'Cancela cuando quieras.':`Solo crea tu cuenta. Al terminar la prueba no se cobra nada: decides si te suscribes por ${esc(CFG.price||'$99 al mes')}.`} Solo mayores de 21. <a class="link" href="/terminos">Términos</a></p></section>`}
+function recoBlock(title,sub,r){if(!r)return'';return `<div class="rb"><div class="rd">${title}</div><p class="note" style="margin:0 0 6px">${sub}</p>
+ ${r.legs.map(x=>`<div class="rl"><span><span class="ab">${esc(short(x.team))}</span>${esc(x.team)}<br><span class="note">vs ${esc(x.vs)}, ${when(x.start)}</span>${notesHtml(x)}</span><b style="flex:none">${pct(x.p)}</b></div>`).join('')}
+ <div class="rs"><div><span class="note">Probabilidad BetVision</span><div class="big">${pct(r.p)}</div></div><div style="text-align:right"><span class="note">Cuota combinada</span><div class="rf">${us(r.price)}</div><span class="ev ${r.ev>=0?'pos':'neg'}">Valor ${sg(r.ev)}</span></div></div>
+ <button class="add" data-set="${r.legs.map(x=>x.gid+'|'+x.idx).join(',')}">Usar este parlay</button></div>`}
+function dogsBlock(R){const D=(R.dogs||[]).filter(x=>new Date(x.start).getTime()>Date.now());
+ if(!D.length)return `<div class="rb"><div class="rd">Underdogs con valor</div><p class="note">Ahora mismo ningún underdog cumple las 3 reglas: pagar +120 o más, tener al menos 35 % de probabilidad y valor positivo. Cuando aparezca uno, sale aquí.</p></div>`;
+ return `<div class="rb"><div class="rd">Underdogs con valor</div><p class="note" style="margin:0 0 6px">Pagan más de lo que arriesgas y tienen una posibilidad real de ganar. Pierden más seguido que los favoritos, pero cuando ganan pagan más de lo justo.</p>
+ ${D.map(x=>{const k=x.gid+'|'+x.idx,on=LEGS.includes(k);return `<div class="rl"><span><span class="ab">${esc(short(x.team))}</span>${esc(x.team)}<br><span class="note">vs ${esc(x.vs)}, ${when(x.start)}. Apuestas $10, cobras ${money(10*x.price)}. Valor <span class="pos">${sg(x.ev)}</span></span></span><span style="text-align:right;flex:none"><b>${pct(x.p)}</b><br><span class="note">${us(x.price)}</span><br><button class="chk" style="margin-top:4px" data-leg="${k}" aria-pressed="${on}" aria-label="${on?'Quitar':'Añadir'} ${esc(x.team)} al parlay"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button></span></div>`}).join('')}</div>
+ ${recoBlock('Parlay de underdogs','Los dos underdogs con más valor. Paga mucho, pero la probabilidad de acertar los dos es baja: tómalo como apuesta pequeña.',R.dogParlay)}`}
+function notesHtml(x){return (x.risk||[]).map(t=>`<br><span class="warnt">⚠️ ${esc(t)}</span>`).join('')+(x.notes||[]).map(t=>`<br><span class="note">• ${esc(t)}</span>`).join('')}
+function contextBlock(R){const C=(R.context||[]).filter(x=>new Date(x.start).getTime()>Date.now());if(!C.length)return'';
+ return `<div class="rb"><div class="rd">Jugadas por contexto</div><p class="note" style="margin:0 0 6px">Lo que las casas todavía no reflejan: motivación, descansos probables y situación de la temporada.</p>
+ ${C.map(x=>{const k=x.gid+'|'+x.idx,on=LEGS.includes(k);return `<div class="rl"><span><span class="ab">${esc(short(x.team))}</span>${esc(x.team)}<br><span class="note">vs ${esc(x.vs)}, ${when(x.start)}. Casas ${pct(x.pc)}, BetVision ${pct(x.p)}. Cuota ${us(x.price)}, valor <span class="pos">${sg(x.ev)}</span></span>${notesHtml(x)}</span><span style="text-align:right;flex:none"><b>${pct(x.p)}</b><br><button class="chk" style="margin-top:4px" data-leg="${k}" aria-pressed="${on}" aria-label="${on?'Quitar':'Añadir'} ${esc(x.team)} al parlay"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button></span></div>`}).join('')}</div>`}
+function bvBlock(R){const r=R.bv;if(!r||r.legs.some(x=>new Date(x.start).getTime()<=Date.now()))return'';
+ return recoBlock('🧠 Recomendación BetVision','Nuestra jugada del día basada en todo: valor de la cuota, abridor, bullpen, cerrador, motivación y rebote. Solo equipos con 40 % o más y sin riesgos. Nada es seguro: pierde unas '+Math.round((1-r.p)*100)+' de cada 100 veces.',r)}
+function sorpBlock(R){const r=R.sorpresa,L=(R.sorpList||[]).filter(x=>new Date(x.start).getTime()>Date.now());if(!L.length)return'';
+ const row=x=>{const k=x.gid+'|'+x.idx,on=LEGS.includes(k);return `<div class="rl" style="align-items:flex-start"><span><span class="ab">${esc(short(x.team))}</span>${esc(x.team)} <span class="chip" style="font-size:11px">Underdog ${us(x.price)}</span><br><span class="note">vs ${esc(x.vs)}, ${when(x.start)}</span><span class="note" style="display:block;margin-top:4px">${x.why.map(t=>'✔︎ '+esc(t)).join('<br>')}</span></span><span style="text-align:right;flex:none"><b>${pct(x.p)}</b><br><button class="odds" style="margin-top:6px;min-height:40px;width:76px" data-leg="${k}" aria-pressed="${on}" aria-label="${on?'Quitar':'Añadir'} ${esc(x.team)} al parlay">${us(x.price)}</button></span></div>`};
+ return `<div class="rb"><div class="rd">🎲 Parlay sorpresa: contra la corriente</div><p class="note" style="margin:0 0 6px">Nadie los tiene de favoritos, pero los datos dan razones para que ganen: pitcheo, historial entre ellos, racha, cerrador rival cansado. ${r?`Las dos juntas pegan unas <b>${Math.round(r.p*100)} de cada 100</b> veces y pagan <b>${us(r.price)}</b>.`:''} Es para apostar poquito: si sale, paga bien.</p>
+ ${(r?r.legs:L).map(row).join('')}
+ ${r?`<button class="add" data-set="${r.legs.map(x=>x.gid+'|'+x.idx).join(',')}">Usar este parlay</button>`:''}
+ ${L.length>(r?2:0)&&r?`<details class="ficha"><summary>Más underdogs con razones (${L.length-2})</summary>${L.filter(x=>!r.legs.includes(x)).map(row).join('')}</details>`:''}</div>`}
+function reboteBlock(R){const B=(R.rebote||[]).filter(x=>new Date(x.start).getTime()>Date.now());if(!B.length)return'';
+ return `<div class="rb"><div class="rd">🔄 Rebote: vienen de perder</div><p class="note" style="margin:0 0 6px">Equipos que perdieron su último juego. Te mostramos su valor real, sea bueno o malo. Todos quedan guardados en el Récord para medir si esta estrategia funciona.</p>
+ ${B.map(x=>{const k=x.gid+'|'+x.idx,on=LEGS.includes(k);return `<div class="rl"><span><span class="ab">${esc(short(x.team))}</span>${esc(x.team)}<br><span class="note">vs ${esc(x.vs)}, ${when(x.start)}. Cuota ${us(x.price)}, valor <span class="${x.ev>=0?'pos':'neg'}">${sg(x.ev)}</span></span>${notesHtml(x)}</span><span style="text-align:right;flex:none"><b>${pct(x.p)}</b><br><button class="chk" style="margin-top:4px" data-leg="${k}" aria-pressed="${on}" aria-label="${on?'Quitar':'Añadir'} ${esc(x.team)} al parlay"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button></span></div>`}).join('')}</div>`}
+function machoBlock(R){const m=R.macho;if(!m||new Date(m.start).getTime()<=Date.now())return '';
+ return `<div class="rb"><div class="rd">Macho del día (apuesta directa)</div><p class="note" style="margin:0 0 6px">La jugada más segura del día. Una sola apuesta a un buen favorito siempre es más segura que cualquier parlay.</p>
+ <div class="rl"><span><span class="ab">${esc(short(m.team))}</span>${esc(m.team)}<br><span class="note">vs ${esc(m.vs)}, ${when(m.start)}. Apuestas $10, cobras ${money(10*m.price)}. Valor <span class="${m.ev>=0?'pos':'neg'}">${sg(m.ev)}</span></span>${notesHtml(m)}</span><span style="text-align:right;flex:none"><b>${pct(m.p)}</b><br><span class="note">${us(m.price)}</span></span></div>
+ <p class="note">Aun así pierde unas ${Math.round((1-m.p)*100)} de cada 100 veces.</p></div>`}
+function safeSub(R){const r=R.safest;if(!r)return'';const lose=Math.round((1-r.p)*100);
+ return (R.safeFiltered?'Dos machos de 60 % o más, sin riesgos de contexto (descansos o abridor sin anunciar).':'Hoy no hay suficientes machos sin riesgo: estos son los más probables. Revisa los avisos.')+` Nada es seguro: pierde unas ${lose} de cada 100 veces.`+(r.p<.4?' Hoy ningún par pasa del 40 %: el Macho del día solo es más seguro.':'')}
+function reco(){const R=DATA.reco||{};if(!R.bv&&!(R.sorpList||[]).length&&!R.safest&&!R.value&&!(R.dogs||[]).length&&!(R.context||[]).length&&!(R.rebote||[]).length)return'';
+ return `<section class="reco"><h2>Parlays recomendados <span>Cuotas en vivo</span></h2>
+ ${bvBlock(R)}
+ ${recoBlock('Parlay más seguro',safeSub(R),R.safest)}
+ ${sorpBlock(R)}
+ ${machoBlock(R)}
+ ${contextBlock(R)}
+ ${reboteBlock(R)}
+ ${recoBlock('Más valor','La cuota paga más de lo que dice la probabilidad BetVision.',R.value)}
+ ${dogsBlock(R)}
+ ${!R.value?'<p class="note">Ahora mismo no hay suficientes selecciones con valor para un parlay de valor. Esperar también es una decisión.</p>':''}
+ <p class="note">Probabilidad = consenso de todas las casas sin su margen. No es una garantía.</p></section>`}
+function hero(){const L=legs();const p=L.length?L.reduce((t,x)=>t*x.o.p,1):null;const ticks=Array.from({length:21},(_,i)=>`<span style="height:${i%5===0?26:13}px"></span>`).join('');
+ return `<button class="hero" data-tab="parlay"><div class="hl">${L.length?'Probabilidad de tu parlay, '+L.length+(L.length===1?' selección':' selecciones'):'Tu parlay'}</div><div class="scale"><span class="sn">0</span><span class="sn">25</span><span class="big">${p==null?'0':pct(p)}</span><span class="sn">75</span><span class="sn">100</span></div><div class="ruler">${ticks}${p!=null?`<i style="left:${(p*100).toFixed(1)}%"></i>`:''}</div><div class="hint">${L.length?'Toca para ver el pago y el valor':'Toca el + de un equipo para empezar'}</div></button>`}
+function ficha(g){const c=g.ctx;if(!c||c.locked)return'';
+ const row=x=>`<div class="fx"><b>${esc(x.team)}</b>${x.clinched?' <span class="lb" style="font-size:11px;padding:1px 8px">Clasificado</span>':''}${x.elim?' <span class="note">(eliminado)</span>':''}<br><span class="note">Récord ${x.record||'—'}, últimos 10: ${x.l10||'—'}, racha: ${x.streak||'—'}</span><br><span class="note">Abridor: ${x.pitcher?esc(x.pitcher.name)+(x.pitcher.era?` (${x.pitcher.w}-${x.pitcher.l}, ${x.pitcher.era} ERA, ${x.pitcher.whip} WHIP${x.pitcher.so!=null?', '+x.pitcher.so+' ponches':''})`:''):'sin anunciar'}</span>${x.bullpen&&x.bullpen.era?`<br><span class="note">Bullpen: ${x.bullpen.era} ERA, ${x.bullpen.whip} WHIP</span>`:''}${x.bullpen&&x.bullpen.closer?`<br><span class="note">Cerrador: ${esc(x.bullpen.closer.name)}${x.bullpen.closer.sv!=null?`, ${x.bullpen.closer.sv} salvamentos`:''}${x.bullpen.closer.bs!=null?`, ${x.bullpen.closer.bs} fallados`:''}${x.bullpen.closer.era?`, ${x.bullpen.closer.era} ERA`:''}. ${x.bullpen.closer.pitchedTwoDays?'<span class="warnt">⚠️ Lanzó ayer y antier</span>':x.bullpen.closer.pitchedYesterday?'Lanzó ayer':'Descansado'}</span>`:''}${x.lastGame?`<br><span class="note">Último juego: ${esc(x.lastGame)}</span>`:''}</div>`;
+ const sm=c.sim?`<div class="fx"><b>🎯 Simulación Monte Carlo</b><br><span class="note">Jugamos este partido ${c.sim.n.toLocaleString('en-US')} veces con la ofensiva, el abridor, el bullpen y la localía de cada equipo.</span><br>${esc(c.home.team)} gana <b>${pct(c.sim.pHome)}</b> · ${esc(c.away.team)} gana <b>${pct(1-c.sim.pHome)}</b><br><span class="note">Marcador promedio: ${esc(c.away.team)} ${c.sim.runsA.toFixed(1)} – ${esc(c.home.team)} ${c.sim.runsH.toFixed(1)}. Es una segunda opinión: el Récord mide si acierta más que las casas.</span></div>`:'';
+ return `<details class="ficha"><summary>Ficha de análisis</summary>${sm}${c.series||c.serie?`<p class="note"><b>${esc([c.series,c.serie&&c.serie.juego].filter(Boolean).join(', '))}</b>${c.serie&&c.serie.estado?'. '+esc(c.serie.estado):''}</p>`:''}${row(c.away)}${row(c.home)}${c.h2h&&c.h2h.length?`<p class="note"><b>Juegos recientes entre ellos:</b><br>${c.h2h.map(esc).join('<br>')}</p>`:''}${c.flags.length?`<ul>${c.flags.map(f=>`<li class="${f.risk?'warnt':'note'}">${f.risk?'⚠️ ':''}${esc(f.text)}</li>`).join('')}</ul>`:'<p class="note">Sin alertas de contexto.</p>'}</details>`}
+function card(g){const base=cardBase(g);return premium()?base.replace(/<\/div>$/,pickBlock(g)+(g.ctx?ficha(g):'')+'</div>'):base}
+function pickBlock(g){const k=g.pick;if(!k)return'';
+ const T={verde:['🟢','Recomendación'],amarillo:['🟡','Recomendación con incertidumbre alta'],blanco:['⚪','Sin ventaja estadística clara']}[k.state];
+ const d=(k.edge*100),fac=x=>`<div class="note" style="margin-top:6px"><b>${esc(x.team)}</b>${x.pro.map(t=>`<br>+ ${esc(t)}`).join('')}${x.con.map(t=>`<br><span class="warnt">− ${esc(t)}</span>`).join('')}${!x.pro.length&&!x.con.length?'<br>Sin factores destacados.':''}</div>`;
+ return `<details class="ficha"><summary>${T[0]} Selección BetVision: <b>${esc(k.team)}</b>${k.underdog?' <span class="lb" style="font-size:11px;padding:1px 8px">Underdog</span>':''}</summary>
+ <p class="note" style="margin:6px 0"><b>${T[1]}.</b> ${k.state==='blanco'?`Es el equipo más probable, pero ninguna cuota paga lo suficiente. Mejor no forzar esta apuesta.`:`El modelo le ve más oportunidad de la que paga la cuota.`}</p>
+ <div class="kpis" style="margin:6px 0"><div class="kpi"><div class="l">Nuestro modelo</div><div class="big">${pct(k.pM)}</div></div><div class="kpi"><div class="l">Lo que dice el precio (${us(k.price)})</div><div class="big">${pct(k.pImpl)}</div></div><div class="kpi"><div class="l">Diferencia</div><div class="big ${d>=0?'pos':'neg'}">${d>=0?'+':''}${d.toFixed(1)} pts</div></div><div class="kpi"><div class="l">Incertidumbre</div><div class="big">${k.uncertainty==='alta'?'Alta':'Baja'}</div></div></div>
+ ${k.unc.length?`<p class="note">${k.unc.map(t=>'⚠️ '+esc(t)).join('<br>')}</p>`:''}
+ <p class="note" style="margin:6px 0 0"><b>Factores:</b></p>${k.sides.map(fac).join('')}
+ <p class="note" style="margin-top:8px">"Puede ganar" no es lo mismo que "buena apuesta": solo vale la pena cuando nuestro modelo está por encima de lo que dice el precio.</p></details>`}
+function chipsOf(g){const C=(g.ctx&&!g.ctx.locked?(g.ctx.flags||[]):[]).concat(g.mktFlags||[]).filter(f=>f.chip);const wx=g.ctx&&g.ctx.wx;
+ if(wx&&!C.some(f=>f.tag==='lluvia'))C.push({chip:`☀️ ${wx.temp}°F, lluvia ${wx.rain} %`});
+ return C.length?`<div class="chips2" aria-label="Claves del partido">${C.slice(0,8).map(f=>`<span class="chip${f.risk?' r':''}">${esc(f.chip)}</span>`).join('')}</div>`:''}
+function cardBase(g){const prem=premium();return `<div class="g"><div class="gh"><span>${esc(g.league)}, ${when(g.start)}</span><span>${g.books} casas</span></div>${prem?chipsOf(g):''}
+ ${g.outcomes.map((o,i)=>{const k=g.id+'|'+i,on=LEGS.includes(k);const q=prem?quote(o):null;const pb=prem&&o.pBV!=null?o.pBV:o.p;const ev=prem?pb*q.price-1:null;const s=prem?sugStake(o):null;const gl=prem?goLink(q):null;
+ return `<div class="side"><span class="nm"><span class="ab">${esc(o.name==='Draw'?'EMP':short(o.name))}</span>${esc(o.name==='Draw'?'Empate':o.name)} <i>${o.name===g.home?'local':''}</i></span><span class="pc">${pct(prem&&o.pBV!=null?o.pBV:o.p)}<small>prob.</small></span>${prem?`<button class="odds" data-leg="${k}" aria-pressed="${on}" aria-label="${on?'Quitar':'Añadir'} ${esc(o.name)} al parlay, cuota ${us(q.price)}"><small>${esc(q.title)}</small>${us(q.price)}</button>`:''}${prem&&o.adj&&Math.abs(o.adj)>=.005?`<span class="note" style="grid-column:1/-1">Casas ${pct(o.p)}, BetVision ${pct(o.pBV)} <span class="${o.adj>0?'pos':'neg'}">(${o.adj>0?'+':''}${(o.adj*100).toFixed(1)} por contexto)</span></span>`:''}
+ ${i===0?`<div class="bar" style="grid-column:1/-1">${g.outcomes.map((x,j)=>`<span class="${j===0?'bh':'ba'}" style="width:${x.p*100}%"></span>`).join('')}</div>`:''}
+ ${prem?`<div class="ctl"><span>Justa ${us(o.fair)}</span><span>${q.mine?'Tu casa ':'Mejor: '}${esc(q.title)} ${us(q.price)}</span><span class="ev ${ev>=0?'pos':'neg'}">Valor ${sg(ev)}</span>${o.open!=null&&Math.abs(o.p-o.open)>=.01?`<span>Abrió ${pct(o.open)} → ${pct(o.p)}</span>`:''}${s?`<span class="sug">Sugerido ${money(s)}</span>`:''}
+ ${gl?`<a class="bet" href="${gl}" target="_blank" rel="noopener">Apostar en ${esc(q.title)} ↗</a>`:''}<button class="reg" data-reg="${k}">Registrar</button></div>`
+ :(i===g.outcomes.length-1?`<div class="ctl"><span class="lock">🔒 Valor, cuota justa y parlays: Premium</span></div>`:'')}</div>`}).join('')}</div>`}
+function trialBar(){const d=Math.max(0,Math.ceil((new Date(ME.trial_ends)-Date.now())/864e5));return `<div class="info" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span>🎁 <b>Prueba Premium:</b> te ${d===1?'queda 1 día':'quedan '+d+' días'}.</span>${d<=3?'<button class="btn2" data-act="subscribe">Suscribirme</button>':''}</div>`}
+function liveList(list){if(!list.length)return'';return `<h2 class="day">En juego ahora</h2><div class="panel">${list.map(g=>`<div class="leg"><span><b>${esc(g.away)}</b> en <b>${esc(g.home)}</b><br><span class="note">${esc(g.league)}, empezó ${when(g.start)}</span></span><span class="status open" style="flex:none">En juego</span></div>`).join('')}<p class="note">BetVision analiza cuotas antes del partido. Durante el juego no se calcula valor.</p></div>`}
+function renderGames(){const now=Date.now();const up=DATA.games.filter(g=>new Date(g.start).getTime()>now),started=DATA.games.filter(g=>new Date(g.start).getTime()<=now&&new Date(g.start).getTime()>now-5*3600e3);
+ const lgs=[...new Set(up.map(g=>g.league))];let list=up.filter(g=>S.lg==='all'||g.league===S.lg);const liveL=started.filter(g=>S.lg==='all'||g.league===S.lg);
+ let h=(ME&&ME.on_trial?trialBar():'')+(premium()?reco()+hero():cta())+`<div class="tiles">${['all',...lgs].map(l=>`<button class="tile" data-lg="${esc(l)}" aria-pressed="${S.lg===l}"><span class="tx"><b>${l==='all'?'Todos':esc(l)}</b><small>${up.filter(g=>l==='all'||g.league===l).length} próximos</small></span></button>`).join('')}</div>`;
+ if(premium())h+=`<div class="row"><label>Ordenar<select id="sort"><option value="time" ${S.sort==='time'?'selected':''}>Por hora</option><option value="ev" ${S.sort==='ev'?'selected':''}>Mayor valor</option><option value="prob" ${S.sort==='prob'?'selected':''}>Mayor probabilidad</option></select></label></div>`;
+ if(!list.length)return h+'<div class="panel"><p>No hay partidos próximos con cuotas en este momento.</p></div>'+liveList(liveL);
+ if(premium()&&S.sort!=='time'){const rows=list.flatMap(g=>g.outcomes.map(o=>({g,o,ev:(o.pBV!=null?o.pBV:o.p)*quote(o).price-1}))).sort((a,b)=>S.sort==='ev'?b.ev-a.ev:b.o.p-a.o.p).slice(0,25);
+  return h+liveList([])+`<div class="panel">${rows.map(r=>`<div class="leg"><span><b>${esc(r.o.name)}</b><br><span class="note">${esc(r.g.league)}, ${when(r.g.start)}</span></span><span style="text-align:right"><b>${pct(r.o.p)}</b><br><span class="ev ${r.ev>=0?'pos':'neg'}">${sg(r.ev)}</span></span></div>`).join('')}</div>`}
+ let last='';list.forEach(g=>{const d=dayKey(g.start);if(d!==last){h+=`<h2 class="day">${d}</h2>`;last=d}h+=card(g)});return h+liveList(liveL)}
+function renderParlay(){if(!premium())return cta();const L=legs();if(!L.length)return '<div class="panel"><h2>Tu parlay está vacío</h2><p>Toca el cuadro de los equipos que quieras combinar.</p></div>';
+ const p=L.reduce((t,x)=>t*(x.o.pBV!=null?x.o.pBV:x.o.p),1),d=L.reduce((t,x)=>t*x.price,1),ev=p*d-1;
+ return `<div class="panel"><h2>Tu parlay</h2>${L.map(x=>`<div class="leg"><span><b>${esc(x.o.name)}</b><br><span class="note">${esc(x.g.league)}, ${pct(x.o.p)}, ${us(x.price)}</span></span><button data-rm="${x.k}">Quitar</button></div>`).join('')}
+ <div class="kpis"><div class="kpi"><div class="l">Probabilidad de acertar</div><div class="big">${pct(p)}</div></div><div class="kpi"><div class="l">Cuota combinada</div><div class="big">${us(d)}</div></div><div class="kpi"><div class="l">Cuota justa</div><div class="big">${us(1/p)}</div></div><div class="kpi"><div class="l">Valor esperado</div><div class="big">${sg(ev)}</div></div></div>
+ <div class="row"><label>Apuesta<input type="number" id="stake" min="1" value="${S.stake}"></label></div>
+ <p>Si aciertas cobras <b>${money(S.stake*d)}</b>. Si fallas pierdes <b>${money(S.stake)}</b>. Ganancia media esperada <b class="${ev>=0?'pos':'neg'}">${money(S.stake*ev)}</b>.</p>
+ ${L.length>=4?`<div class="warn"><b>${L.length} selecciones:</b> perderás este parlay unas ${Math.round((1-p)*10)} de cada 10 veces.</div>`:''}</div>`}
+function renderBets(){if(!premium())return cta();
+ if(BETS===null){api('/api/bets').then(b=>{BETS=b;render()}).catch(()=>{BETS=[];render()});return '<div class="panel"><p>Cargando tus apuestas…</p></div>'}
+ if(!BETS.length)return `<div class="panel"><h2>Tus apuestas</h2><p>Aún no registras ninguna. En cada partido toca <b>Registrar</b> cuando hagas una apuesta en tu casa. BetVision guarda la cuota que tomaste, la compara con la de cierre y la califica sola al terminar el partido.</p></div>`;
+ const settled=BETS.filter(b=>b.status!=='open'),stk=settled.reduce((t,b)=>t+ +b.stake,0),pl=settled.reduce((t,b)=>t+ +(b.profit||0),0);
+ const clv=BETS.map(b=>b.odds_taken*b.closing_prob-1),avg=clv.reduce((a,c)=>a+c,0)/clv.length,beat=clv.filter(x=>x>0).length/clv.length;
+ const lab={open:'Pendiente',won:'Ganada',lost:'Perdida',push:'Empate'};
+ return `<div class="kpis"><div class="kpi"><div class="l">Ganancia (liquidadas)</div><div class="big">${money(pl)}</div></div><div class="kpi"><div class="l">ROI</div><div class="big">${stk?sg(pl/stk):'—'}</div></div>
+ <div class="kpi"><div class="l">CLV promedio</div><div class="big">${sg(avg)}</div></div><div class="kpi"><div class="l">Le ganaste al cierre</div><div class="big">${Math.round(beat*100)}%</div></div></div>
+ <p class="note">El CLV compara tu cuota con la probabilidad al cierre. Si es positivo de forma constante, estás apostando mejor que el mercado aunque a corto plazo pierdas algunas.</p>
+ <div class="panel"><h2>Historial</h2>${BETS.map(b=>{const c=b.odds_taken*b.closing_prob-1;return `<div class="leg"><span><b>${esc(b.team)}</b> <span class="note">vs ${esc(b.opponent)}</span><br><span class="note">${esc(b.league)}, ${when(b.start_time)}. ${money(+b.stake)} a ${us(+b.odds_taken)}. Cierre justo ${us(1/b.closing_prob)}, CLV <span class="${c>=0?'pos':'neg'}">${sg(c)}</span></span></span>
+ <span style="text-align:right"><span class="status ${b.status}">${lab[b.status]||b.status}</span><br>${b.status==='open'?`<button class="link" data-del="${b.id}">Borrar</button>`:`<span class="${+b.profit>=0?'pos':'neg'}">${money(+b.profit)}</span>`}</span></div>`}).join('')}</div>`}
+let REC=null;
+const un=x=>(x>=0?'+':'')+x.toFixed(2)+' u';
+function recRow(title,sub,status,profit){const lab={open:'En juego',won:'Ganada',lost:'Perdida',push:'Empate'};
+ return `<div class="leg"><span><b>${title}</b><br><span class="note">${sub}</span></span><span style="text-align:right;flex:none"><span class="status ${status}">${lab[status]||status}</span><br>${status==='open'?'':`<span class="${+profit>=0?'pos':'neg'}">${un(+profit)}</span>`}</span></div>`}
+function renderRecord(){
+ if(REC===null){api('/api/record').then(r=>{REC=r;render()}).catch(()=>{REC={picks:[],parlays:[],pending:0};render()});return '<div class="panel"><p>Cargando el récord…</p></div>'}
+ const SIMP=(REC.picks||[]).filter(x=>x.kind==='simulacion'&&x.status!=='open'&&x.status!=='push'),smw=SIMP.filter(x=>x.status==='won').length,smu=SIMP.reduce((t,x)=>t+ +(x.profit||0),0);
+ const ALL=REC.picks||[],SV=ALL.filter(x=>x.kind==='sel_verde'&&x.status!=='open'&&x.status!=='push'),svw=SV.filter(x=>x.status==='won').length,svu=SV.reduce((t,x)=>t+ +(x.profit||0),0),P=ALL.filter(x=>(x.kind||'valor')==='valor'),RB=ALL.filter(x=>x.kind==='rebote'),PL=REC.parlays||[];
+ const rbs=RB.filter(x=>x.status!=='open'&&x.status!=='push'),rbw=rbs.filter(x=>x.status==='won').length,rbu=rbs.reduce((t,x)=>t+ +(x.profit||0),0);
+ const st=P.filter(x=>x.status!=='open'),w=st.filter(x=>x.status==='won').length,l=st.filter(x=>x.status==='lost').length,pu=st.filter(x=>x.status==='push').length;
+ const units=st.reduce((t,x)=>t+ +(x.profit||0),0),roi=st.length?units/st.length:0;
+ const dec=st.filter(x=>x.status!=='push'),hit=dec.length?w/dec.length:null,avgP=dec.length?dec.reduce((t,x)=>t+ +x.prob,0)/dec.length:null;
+ const cl=P.filter(x=>x.closing_prob).map(x=>x.odds*x.closing_prob-1),clv=cl.length?cl.reduce((a,c)=>a+c,0)/cl.length:null;
+ const ps=PL.filter(x=>x.status!=='open'),pw=ps.filter(x=>x.status==='won').length,pl=ps.filter(x=>x.status==='lost').length,pun=ps.reduce((t,x)=>t+ +(x.profit||0),0);
+ const f=S.recF||'all',keep=x=>f==='all'||x.status===f;
+ let h=`<div class="panel"><h2>Récord de BetVision</h2><p>Cada recomendación queda guardada <b>automáticamente</b>, con la cuota del momento, y se califica sola al terminar el partido. <b>Las perdidas también se muestran. Nada se borra.</b></p></div>`;
+ if(!ALL.length&&!PL.length&&!REC.pending)return h+`<div class="panel"><p>El récord empezó el día que BetVision se puso en línea. Las primeras recomendaciones aparecerán aquí en cuanto terminen sus partidos.</p></div>`;
+ h+=`<div class="kpis"><div class="kpi"><div class="l">Selecciones con valor</div><div class="big">${w}–${l}${pu?'–'+pu:''}</div><div class="l">ganadas–perdidas${pu?'–empates':''}</div></div>
+ <div class="kpi"><div class="l">Ganancia</div><div class="big">${st.length?un(units):'—'}</div><div class="l">ROI ${st.length?sg(roi):'—'}</div></div>
+ <div class="kpi"><div class="l">Acierto real</div><div class="big">${hit==null?'—':pct(hit)}</div><div class="l">Probabilidad media: ${avgP==null?'—':pct(avgP)}</div></div>
+ <div class="kpi"><div class="l">CLV promedio</div><div class="big">${clv==null?'—':sg(clv)}</div><div class="l">contra la cuota de cierre</div></div>
+ <div class="kpi"><div class="l">Selecciones 🟢</div><div class="big">${svw}–${SV.length-svw}</div><div class="l">${SV.length?un(svu)+', ROI '+sg(svu/SV.length):'sin calificar aún'}</div></div>
+ <div class="kpi"><div class="l">Simulación 🎯</div><div class="big">${smw}–${SIMP.length-smw}</div><div class="l">${SIMP.length?un(smu)+', ROI '+sg(smu/SIMP.length):'sin calificar aún'}</div></div>
+ <div class="kpi"><div class="l">Estrategia Rebote</div><div class="big">${rbw}–${rbs.length-rbw}</div><div class="l">${rbs.length?un(rbu)+', ROI '+sg(rbu/rbs.length):'sin calificar aún'}</div></div>
+ <div class="kpi"><div class="l">Parlays del día</div><div class="big">${pw}–${pl}</div><div class="l">${ps.length?un(pun):'sin calificar aún'}</div></div></div>
+ <p class="note"><b>1 unidad (u)</b> es el monto fijo que apostarías cada vez, por ejemplo $10. Si el modelo está bien calibrado, el acierto real debería parecerse a la probabilidad media. Con pocas selecciones, los números cambian mucho; el récord se vuelve confiable con cientos de resultados.</p>`;
+ if(!REC.premium&&REC.pending)h+=`<div class="cta"><h2>${REC.pending} recomendaciones en juego</h2><p class="note">Con Premium las ves antes de que empiece el partido, no solo el resultado.</p><button class="add" data-act="subscribe">Probar ${CFG.trialDays||7} días gratis</button></div>`;
+ h+=`<div class="chips" style="display:flex;gap:8px;margin:14px 0 4px">${[['all','Todas'],['won','Ganadas'],['lost','Perdidas']].concat(REC.premium?[['open','En juego']]:[]).map(([k,t])=>`<button class="btn2" data-recf="${k}" style="${f===k?'background:var(--acc);color:#fff;border-color:var(--acc)':''}">${t}</button>`).join('')}</div>`;
+ const pk=P.filter(keep),pp=PL.filter(keep);
+ h+=`<div class="panel"><h2>Selecciones con valor</h2>${pk.length?pk.slice(0,150).map(x=>recRow(`${esc(x.team)}${+x.odds>=2.2?' <span class="lb" style="font-size:11px;padding:1px 8px">Underdog</span>':''} <span class="note">vs ${esc(x.opponent)}</span>`,`${esc(x.league)}, ${when(x.start_time)}. ${us(+x.odds)} en ${esc(x.book||'la mejor casa')}, probabilidad ${pct(+x.prob)}, valor ${sg(+x.ev)}`,x.status,x.profit)).join(''):'<p class="note">Nada en este filtro todavía.</p>'}</div>`;
+ const rk=RB.filter(keep);
+ h+=`<div class="panel"><h2>🔄 Estrategia Rebote</h2><p class="note">Todos los equipos que venían de perder, apostados a 1 unidad. Así sabremos con datos si "perdió ayer, hoy rebota" gana dinero o no.</p>${rk.length?rk.slice(0,100).map(x=>recRow(`${esc(x.team)} <span class="note">vs ${esc(x.opponent)}</span>`,`${esc(x.league)}, ${when(x.start_time)}. ${us(+x.odds)}, probabilidad ${pct(+x.prob)}, valor ${sg(+x.ev)}`,x.status,x.profit)).join(''):'<p class="note">Nada en este filtro todavía.</p>'}</div>`;
+ h+=`<div class="panel"><h2>Parlays recomendados</h2>${pp.length?pp.slice(0,60).map(x=>recRow(`${({betvision:'Recomendación BetVision',sorpresa:'Parlay sorpresa',valor:'Más valor',favoritos:'Más seguro',underdogs:'Underdogs'})[x.kind]||x.kind}, ${new Date(x.day+'T12:00:00').toLocaleDateString('es',{day:'numeric',month:'short'})}`,`${(x.legs||[]).map(l=>esc(l.team)).join(' + ')}. Cuota ${us(+x.odds)}, probabilidad ${pct(+x.prob)}`,x.status,x.profit)).join(''):'<p class="note">Nada en este filtro todavía.</p>'}</div>`;
+ return h}
+
+
+const ASK={msgs:[],busy:false};
+const SUGG=['¿Cuáles son los mejores parlays para hoy?','¿Cuál es el macho más seguro de hoy?','¿Qué equipos pueden descansar titulares hoy?','Dame un parlay de hembras con valor'];
+const FILL='Revisa mi boleto: Equipo -115, Equipo +125, Equipo +115, Equipo -135. Apuesto $20 y paga $294.87';
+function fmt(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}
+function renderAsk(){if(!premium())return cta();
+ return `<div class="panel"><h2>Pregúntale a BetVision</h2><p class="note">Un analista con inteligencia artificial que usa los datos de hoy: probabilidades, motivación, descansos, abridores y valor. No es un consejo seguro: te explica el porqué para que decidas tú.</p></div>
+ <div id="chat">${ASK.msgs.length?ASK.msgs.map(m=>`<div class="bub ${m.role}">${fmt(m.content)}</div>`).join(''):`<div class="sugg"><button class="btn2" data-fill="1">📝 Revisar mi boleto (escribe tus equipos y cuotas)</button>${SUGG.map(q=>`<button class="btn2" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>`}
+ ${ASK.busy?'<div class="bub assistant">Analizando los partidos de hoy…</div>':''}</div>
+ <form id="askForm" class="askbar"><textarea name="q" rows="2" maxlength="600" placeholder="Escribe tu pregunta…" ${ASK.busy?'disabled':''}></textarea><button class="add" ${ASK.busy?'disabled':''}>Enviar</button></form>
+ ${ASK.msgs.length?'<p class="note" style="text-align:center"><button class="link" data-act="askclear">Empezar de nuevo</button></p>':''}`}
+async function sendAsk(q){q=String(q||'').trim();if(!q||ASK.busy)return;ASK.msgs.push({role:'user',content:q});ASK.busy=true;render();scrollChat();
+ try{const r=await api('/api/ask',{method:'POST',body:JSON.stringify({messages:ASK.msgs})});ASK.msgs.push({role:'assistant',content:r.answer})}
+ catch(e){ASK.msgs.pop();toast(e.message)}ASK.busy=false;render();scrollChat()}
+function scrollChat(){setTimeout(()=>{const f=document.getElementById('askForm');if(f)f.scrollIntoView({block:'end',behavior:'smooth'})},50)}
+
+function renderAccount(){
+ if(!SB)return '<div class="panel"><h2>Cuenta</h2><p>Las cuentas aún no están configuradas en el servidor (faltan las variables de Supabase).</p></div>';
+ if(!SESSION){const up=S.auth==='signup';return `<div class="panel"><h2>${up?'Crea tu cuenta':'Entra a tu cuenta'}</h2><form class="form" id="authForm">
+  <input type="email" name="email" placeholder="Correo electrónico" required autocomplete="email" autocapitalize="none"><div class="pw"><input type="password" id="pwd" name="password" placeholder="Contraseña (mínimo 6)" minlength="6" required autocomplete="${up?'new-password':'current-password'}"><button type="button" class="eye" data-act="eye" aria-label="Mostrar contraseña">👁</button></div>
+  ${up?`<label class="ck"><input type="checkbox" name="age" required>Confirmo que tengo 21 años o más.</label><label class="ck"><input type="checkbox" name="terms" required><span>Entiendo que BetVision ofrece análisis informativos, no garantiza ganancias y no es una casa de apuestas, y acepto los <a href="/terminos" target="_blank" class="link">Términos y la Política de privacidad</a>.</span></label>`:''}
+  <button class="add" type="submit">${up?'Crear cuenta':'Entrar'}</button></form>
+  <p class="note">${up?'¿Ya tienes cuenta? <button class="link" data-auth="login">Entra aquí</button>':'¿No tienes cuenta? <button class="link" data-auth="signup">Créala aquí</button>. <button class="link" data-act="reset">Olvidé mi contraseña</button>'}</p></div>`}
+ const st={active:'Premium activo',trialing:'Suscrito: tu primer cobro llega al terminar la prueba',past_due:'Pago pendiente: actualiza tu tarjeta',canceled:'Suscripción cancelada',none:'Plan gratis'};
+ const dl=ME&&ME.trial_ends?Math.max(0,Math.ceil((new Date(ME.trial_ends)-Date.now())/864e5)):0;
+ return `<div class="panel"><h2>Tu cuenta</h2><p>${esc(ME?ME.email:'')}</p><p><b>${ME&&ME.on_trial?`Prueba gratis: te ${dl===1?'queda 1 día':'quedan '+dl+' días'}`:ME&&ME.paying?(st[ME.sub_status]||'Premium activo'):ME&&ME.sub_status&&ME.sub_status!=='none'?st[ME.sub_status]||'Plan gratis':(ME&&ME.trial_ends?'Tu prueba gratis terminó':'Plan gratis')}</b>${ME&&ME.on_trial?`<br><span class="note">Tienes Premium completo hasta el ${new Date(ME.trial_ends).toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}.</span>`:ME&&ME.paying&&ME.period_end?`<br><span class="note">${ME.sub_status==='trialing'?'Primer cobro':'Se renueva'} el ${new Date(ME.period_end).toLocaleDateString('es',{day:'numeric',month:'long'})}</span>`:''}</p>
+ ${ME&&ME.paying?'<button class="btn2" data-act="portal">Administrar o cancelar suscripción</button>':ME&&ME.on_trial?`<button class="add" data-act="subscribe">Suscribirme ahora</button><p class="note">No se cobra nada hasta que terminen tus días de prueba.</p>`:`<button class="add" data-act="subscribe">Suscribirme por ${esc(CFG.price||'$99 al mes')}</button>`}</div>
+ ${premium()?`<div class="panel"><h2>Tu presupuesto</h2><p class="note">El dinero que apartas solo para apostar. BetVision sugiere apostar una fracción pequeña cuando hay valor (máximo 2 % por apuesta).</p><div class="row"><label>Presupuesto ($)<input type="number" id="bankroll" min="0" value="${ME?ME.bankroll:0}"></label></div><button class="btn2" data-act="bankroll">Guardar</button></div>`:''}
+ ${booksPanel()}
+ <div class="panel"><button class="btn2" data-act="logout">Cerrar sesión</button></div>`}
+
+function whyPanel(){const r=(t,a,b)=>`<div class="why"><div class="wt">${t}</div><div class="wc"><div><span class="wl">Influencer</span>${a}</div><div><span class="wl bv">BetVision</span>${b}</div></div></div>`;
+ return `<div class="panel" id="por-que"><h2>¿Por qué BetVision y no un influencer?</h2><p>Un influencer te da su opinión. BetVision te da los números para que decidas tú.</p>
+ ${r('Su récord','Muchos solo publican sus aciertos. Sus pérdidas son difíciles de comprobar.','Cada recomendación queda guardada sola con su cuota y su resultado, ganada o perdida. El récord completo es público.')}
+ ${r('El método','Opinión, intuición o el análisis de una sola persona.','Compara las cuotas de todas las casas, les quita su margen y calcula la probabilidad de consenso de todo el mercado.')}
+ ${r('La cuota','Cuando ves su pick, miles ya lo siguieron y la cuota empeoró.','Te muestra en ese momento la mejor cuota disponible y si todavía tiene valor.')}
+ ${r('Cómo gana dinero','Muchos cobran comisión de las casas por cada seguidor que se registra, y rara vez lo dicen.',(CFG.affiliates||[]).length?'Cobra una suscripción y puede recibir comisión si abres cuenta desde sus enlaces. Te lo dice claramente, y eso nunca cambia las probabilidades ni el valor que te muestra.':'Cobra una suscripción fija. No gana nada cuando tú pierdes.')}
+ ${r('Cuánto apostar','Te dice qué jugar, pero rara vez cuánto según tu presupuesto.','Te sugiere un monto pequeño según tu presupuesto, nunca más del 2 % por apuesta.')}
+ ${r('Cómo sabes si funciona','Esperas a ver si gana o pierde.','El CLV te dice si estás apostando mejor que el mercado, incluso antes de ver resultados.')}
+ <p class="note">Ninguna persona ni herramienta garantiza ganancias. La diferencia es que con BetVision puedes comprobarlo todo, empezando por el <button class="link" data-tab="record">récord completo</button>.</p></div>`}
+
+function renderGuide(){return `<div class="panel"><h2>¿Primera vez?</h2><p class="note">Mira en un minuto cómo usar la app.</p><button class="add" data-act="tour">Ver el tour de BetVision</button></div><div class="panel"><h2>Ajustes</h2><button class="btn2" data-act="theme">Cambiar tema claro u oscuro</button></div>`+whyPanel()+(SESSION?'':booksPanel())+`<div class="panel"><h2>Cómo leer BetVision</h2><ul><li><b>Probabilidad:</b> consenso de todas las casas sin su margen.</li><li><b>Valor:</b> probabilidad por cuota menos 1. Verde significa que la cuota paga más de lo justo.</li><li><b>CLV:</b> si tu cuota es mejor que la de cierre de forma constante, vas por buen camino.</li><li>Pocas selecciones con valor rinden más que muchos favoritos juntos.</li></ul></div>
+ <div class="panel"><p class="note">BetVision ofrece análisis informativos. No es una casa de apuestas, no acepta apuestas y no garantiza ganancias. Solo para mayores de 21 años y donde las apuestas deportivas sean legales.</p><p class="note">Juego responsable: si apostar deja de ser entretenimiento, busca ayuda. En EE. UU.: 1-800-GAMBLER. (esto es 100 pa bajo)</p><p class="note"><a class="link" href="/terminos">Términos y Política de privacidad</a></p></div>`}
+function render(){if(!DATA)return;$('#stamp').textContent=DATA.updated?'Actualizado '+ago(DATA.updated):'Cargando datos…';
+ const err=(DATA.errors||[]).length?`<div class="warn"><b>Aviso:</b> ${DATA.errors.map(esc).join('<br>')}</div>`:'';
+ const V={games:renderGames,ask:renderAsk,parlay:renderParlay,record:renderRecord,bets:renderBets,account:renderAccount,guide:renderGuide};
+ $('#view').innerHTML=(S.tab==='games'?err:'')+V[S.tab]();
+ document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===S.tab));const fab=document.querySelector('.askfab');if(fab)fab.style.display=S.tab==='ask'?'none':'';$('#legN').textContent=legs().length}
+
+/* ----- acciones ----- */
+async function act(a){if(a==='tour'){showTour();return}if(a==='askclear'){ASK.msgs=[];render();return}if(a==='theme'){const c=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=c;ls.set('bv-theme',c);return}if(a==='eye'){const i=$('#pwd');if(i){i.type=i.type==='password'?'text':'password';const b=document.querySelector('.eye');if(b)b.setAttribute('aria-label',i.type==='password'?'Mostrar contraseña':'Ocultar contraseña')}return}try{
+ if(a==='subscribe'){if(!SESSION){S.tab='account';S.auth='signup';render();toast('Crea tu cuenta y empiezan tus 7 días gratis.');return}const r=await api('/api/checkout',{method:'POST'});location.href=r.url}
+ else if(a==='portal'){const r=await api('/api/portal',{method:'POST'});location.href=r.url}
+ else if(a==='bankroll'){const v=+$('#bankroll').value||0;ME=await api('/api/me',{method:'PUT',body:JSON.stringify({bankroll:v})}).then(r=>({...ME,...r}));toast('Presupuesto guardado.');render()}
+ else if(a==='logout'){await SB.auth.signOut();SESSION=null;await refreshAll()}
+ else if(a==='reset'){const em=prompt('Escribe tu correo');if(em){await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin});toast('Te enviamos un correo para cambiar la contraseña.')}}
+ }catch(e){toast(e.message||'Algo salió mal')}}
+function openReg(k){const [gid,i]=k.split('|');const g=DATA.games.find(x=>x.id===gid),o=g.outcomes[+i];const price=quote(o).price;const s=sugStake(o);
+ const d=$('#dlg');d.innerHTML=`<form method="dialog" class="form" id="regForm"><h2>Registrar apuesta</h2><p class="note" style="margin:0">${esc(o.name)} vs ${esc(o.name===g.home?g.away:g.home)}, ${when(g.start)}</p>
+ <label class="note">Cuota que tomaste (americana)<input type="text" name="odds" inputmode="numeric" value="${us(price)}" required></label>
+ <label class="note">Cuánto apostaste ($)<input type="number" name="stake" min="1" step="0.01" value="${s?s.toFixed(2):10}" required></label>
+ <div class="drow"><button class="btn2" value="cancel" formnovalidate>Cancelar</button><button class="add" value="ok">Guardar</button></div></form>`;
+ d.dataset.k=k;d.showModal()}
+document.addEventListener('submit',async e=>{
+ if(e.target.id==='askForm'){e.preventDefault();const v=e.target.q.value;e.target.q.value='';sendAsk(v);return}
+ if(e.target.id==='authForm'){e.preventDefault();const f=new FormData(e.target),email=f.get('email'),password=f.get('password');
+  try{if(S.auth==='signup'){const {error}=await SB.auth.signUp({email,password,options:{data:{age_21_confirmed:true,terms_accepted_at:new Date().toISOString()},emailRedirectTo:location.origin}});if(error)throw error;toast('¡Listo! Confirma tu correo y empiezan tus 7 días de Premium gratis.');S.auth='login';render()}
+   else{const {error}=await SB.auth.signInWithPassword({email,password});if(error)throw error;toast('¡Bienvenido!')}}catch(err){toast(err.message)}}
+ if(e.target.id==='regForm'&&e.submitter&&e.submitter.value==='ok'){e.preventDefault();const f=new FormData(e.target),odds=dec(f.get('odds')),stake=+f.get('stake');const [gid,i]=$('#dlg').dataset.k.split('|');
+  if(!odds){toast('Escribe la cuota como -150 o +130.');return}
+  try{await api('/api/bets',{method:'POST',body:JSON.stringify({gid,idx:+i,odds,stake})});$('#dlg').close();BETS=null;toast('Apuesta registrada.')}catch(err){toast(err.message)}}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab],[data-lg],[data-leg],[data-rm],[data-set],[data-act],[data-auth],[data-reg],[data-del],[data-recf],[data-q],[data-fill]');if(!t)return;
+ if(t.dataset.q){sendAsk(t.dataset.q);return}
+ if(t.dataset.fill){const ta=document.querySelector('#askForm textarea');if(ta){ta.value=FILL;ta.focus();ta.setSelectionRange(19,FILL.length)}return}
+ if(t.dataset.recf){S.recF=t.dataset.recf;render();return}
+ if(t.dataset.act)return act(t.dataset.act);
+ if(t.dataset.reg)return openReg(t.dataset.reg);
+ if(t.dataset.del){if(confirm('¿Borrar esta apuesta?'))api('/api/bets?id='+t.dataset.del,{method:'DELETE'}).then(()=>{BETS=null;render()});return}
+ if(t.dataset.auth){S.auth=t.dataset.auth}
+ else if(t.dataset.tab){S.tab=t.dataset.tab;window.scrollTo(0,0)}else if(t.dataset.lg)S.lg=t.dataset.lg;
+ else if(t.dataset.leg){const k=t.dataset.leg,gid=k.split('|')[0];LEGS=LEGS.includes(k)?LEGS.filter(x=>x!==k):[...LEGS.filter(x=>x.split('|')[0]!==gid),k]}
+ else if(t.dataset.rm)LEGS=LEGS.filter(x=>x!==t.dataset.rm);else if(t.dataset.set)LEGS=t.dataset.set.split(',');
+ ls.set('bv-legs',LEGS);const y=window.scrollY;render();if(!t.dataset.tab)window.scrollTo(0,y)});
+document.addEventListener('change',e=>{if(e.target.id==='stateSel')return savePref('state',e.target.value);if(e.target.id==='bookSel')return savePref('book',e.target.value);if(e.target.id==='sort'){S.sort=e.target.value;render()}if(e.target.id==='stake'){S.stake=Math.max(1,+e.target.value||1);render()}});
+const TH=ls.get('bv-theme',null);if(TH)document.documentElement.dataset.theme=TH;
+
+
+/* ---------- Tour de bienvenida ---------- */
+function showTour(){const T=$('#tour'),K=$('#tourTrack'),S=[...K.children],D=$('#tourDots'),N=$('#tourNext');
+ D.innerHTML=S.map(()=>'<i></i>').join('');T.classList.add('show');K.scrollLeft=0;let cur=-1;
+ const mark=i=>{if(i===cur)return;cur=i;S.forEach((s,j)=>s.classList.toggle('on',j===i));[...D.children].forEach((d,j)=>d.classList.toggle('on',j===i));N.textContent=i===S.length-1?'Empezar':'Siguiente'};
+ const idx=()=>Math.round(K.scrollLeft/Math.max(1,K.clientWidth));
+ K.onscroll=()=>mark(idx());requestAnimationFrame(()=>mark(0));
+ const close=()=>{T.classList.remove('show');ls.set('bv-tour','1')};
+ N.onclick=()=>{const i=idx();if(i>=S.length-1)return close();K.scrollTo({left:(i+1)*K.clientWidth,behavior:'smooth'})};
+ $('#tourSkip').onclick=close;
+ T.onkeydown=e=>{if(e.key==='Escape')close();if(e.key==='ArrowRight')N.click();if(e.key==='ArrowLeft')K.scrollTo({left:Math.max(0,idx()-1)*K.clientWidth,behavior:'smooth'})};
+ T.tabIndex=-1;T.focus({preventScroll:true})}
+
+init();
+try{if(!ls.get('bv-tour'))showTour()}catch(e){}
+
+</script>
+</body>
+</html>
