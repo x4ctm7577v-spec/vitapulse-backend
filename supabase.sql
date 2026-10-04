@@ -69,3 +69,15 @@ create table if not exists lines (
   first_seen timestamptz not null default now()
 );
 alter table lines enable row level security;
+
+
+-- Lista de espera (página /espera)
+create table if not exists waitlist (
+  id bigserial primary key,
+  contact text unique not null,
+  kind text not null default 'email',
+  lang text default 'es',
+  source text,
+  created_at timestamptz not null default now()
+);
+alter table waitlist enable row level security;

@@ -617,7 +617,7 @@ function publicData(full) {
 
 
 /* ---------- Pregúntale a BetVision: analista con IA (API de Claude) ---------- */
-const ASK_LIMIT = Number(E.ASK_LIMIT) || 20;           // preguntas por usuario al día
+const ASK_LIMIT = Number(E.ASK_LIMIT) || 5;            // preguntas por usuario al día
 const askCount = new Map();
 function askAllowed(uid) {
   const day = new Date().toISOString().slice(0, 10), c = askCount.get(uid);
@@ -671,8 +671,8 @@ REGLAS FIJAS:
 - Sugiere montos pequeños: 1 % o 2 % del presupuesto.
 - Escribe para el teléfono: párrafos cortos y emojis solo para el riesgo. Máximo unas 350 palabras.
 - Termina siempre con: "Juega responsable. (esto es 100 pa bajo)"`;
-async function askClaude(messages) {
-  const system = `${AI_RULES}\n\nFecha y hora actual (Este de EE. UU.): ${new Date().toLocaleString('es', { timeZone: 'America/New_York', dateStyle: 'full', timeStyle: 'short' })}.\nCuotas actualizadas: ${cache.updated || 'desconocido'}.\n\nDatos de los próximos partidos (JSON):\n${JSON.stringify(dataForAI())}`;
+async function askClaude(messages, lang = 'es') {
+  const system = `${AI_RULES}${lang === 'en' ? '\n\nIMPORTANT: The user is using the app in ENGLISH. Write your whole answer in English (same format and rules: per-leg risk, "What really worries me" section, never say "lock"/"guaranteed", and end with "Play responsibly. (this is 100 pa bajo)"). Team/data fields may be in Spanish; translate them.' : ''}\n\nFecha y hora actual (Este de EE. UU.): ${new Date().toLocaleString('es', { timeZone: 'America/New_York', dateStyle: 'full', timeStyle: 'short' })}.\nCuotas actualizadas: ${cache.updated || 'desconocido'}.\n\nDatos de los próximos partidos (JSON):\n${JSON.stringify(dataForAI())}`;
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': E.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
@@ -684,6 +684,9 @@ async function askClaude(messages) {
 }
 
 /* ---------- HTTP ---------- */
+const WL_HITS = new Map();
+// La oferta está activa si hay cupón y no pasó la fecha límite (PROMO_UNTIL, formato 2026-12-31)
+const promoOn = () => !!E.PROMO_COUPON && (!E.PROMO_UNTIL || Date.now() < new Date(E.PROMO_UNTIL + 'T23:59:59-05:00').getTime());
 const send = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(obj)); };
 const readBody = req => new Promise((ok, ko) => { const c = []; req.on('data', d => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); req.on('error', ko); });
 const INDEX = path.join(__dirname, 'index.html');
@@ -692,7 +695,7 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   const p = url.pathname;
   try {
-    if (p === '/api/config') return send(res, 200, { supabaseUrl: SUPA_URL, supabaseAnon: SUPA_ANON, price: E.PRICE_LABEL || '$99 al mes', trialDays: TRIAL_DAYS, affiliates: AFFILIATES.map(({ key, name, offer, states }) => ({ key, name, offer: offer || '', states: states || [] })) });
+    if (p === '/api/config') return send(res, 200, { supabaseUrl: SUPA_URL, supabaseAnon: SUPA_ANON, price: E.PRICE_LABEL || '$9.99 al mes', promo: promoOn() ? { price: E.PROMO_PRICE || '$9.99', months: +(E.PROMO_MONTHS || 3) } : null, trialDays: TRIAL_DAYS, affiliates: AFFILIATES.map(({ key, name, offer, states }) => ({ key, name, offer: offer || '', states: states || [] })) });
 
     if (p === '/go') {
       const key = url.searchParams.get('b'), target = url.searchParams.get('u');
@@ -740,6 +743,32 @@ http.createServer(async (req, res) => {
       return send(res, 200, isPremium(prof) ? { ...cache, premium: true } : publicData(cache));
     }
 
+    // ---------- Lista de espera (pública) ----------
+    if (p === '/espera') {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      return res.end(fs.readFileSync(path.join(__dirname, 'espera.html'), 'utf8'));
+    }
+    if (p === '/api/waitlist/count') {
+      if (!sb) return send(res, 200, { count: 0 });
+      const { count } = await sb.from('waitlist').select('id', { count: 'exact', head: true });
+      return send(res, 200, { count: count || 0 });
+    }
+    if (p === '/api/waitlist' && req.method === 'POST') {
+      if (!sb) return send(res, 503, { error: 'La lista todavía no está configurada.' });
+      const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+      const now = Date.now(), hits = (WL_HITS.get(ip) || []).filter(x => now - x < 3600e3);
+      if (hits.length >= 8) return send(res, 429, { error: 'Demasiados intentos. Prueba más tarde.' });
+      WL_HITS.set(ip, [...hits, now]);
+      let b = {}; try { b = JSON.parse((await readBody(req)).toString() || '{}'); } catch (e) { }
+      const kind = b.kind === 'phone' ? 'phone' : 'email';
+      let contact = String(b.contact || '').trim().slice(0, 120);
+      if (kind === 'email') { contact = contact.toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact)) return send(res, 400, { error: 'Correo no válido.' }); }
+      else { const d = contact.replace(/\D/g, ''); if (d.length < 10 || d.length > 15) return send(res, 400, { error: 'Número no válido.' }); contact = '+' + (d.length === 10 ? '1' + d : d); }
+      const { error } = await sb.from('waitlist').upsert({ contact, kind, lang: b.lang === 'en' ? 'en' : 'es', source: String(b.source || '').slice(0, 120) }, { onConflict: 'contact', ignoreDuplicates: true });
+      if (error) { console.error('Lista de espera', error.message); return send(res, 500, { error: 'No se pudo guardar. Intenta de nuevo.' }); }
+      return send(res, 200, { ok: true });
+    }
+
     if (p.startsWith('/api/')) {
       const user = await getUser(req);
       if (!user) return send(res, 401, { error: 'Inicia sesión' });
@@ -759,6 +788,8 @@ http.createServer(async (req, res) => {
         const session = await stripe.checkout.sessions.create({
           mode: 'subscription',
           line_items: [{ price: E.STRIPE_PRICE_ID, quantity: 1 }],
+          // Oferta de lanzamiento: cupón de Stripe (por ejemplo $9.99 los primeros 3 meses)
+          ...(promoOn() ? { discounts: [{ coupon: E.PROMO_COUPON }] } : {}),
           // Si todavía le quedan días de prueba (más de 2), el primer cobro llega cuando termina la prueba
           subscription_data: onAppTrial(prof) && new Date(prof.trial_ends).getTime() - Date.now() > 2 * 864e5 ? { trial_end: Math.floor(new Date(prof.trial_ends).getTime() / 1000) } : undefined,
           client_reference_id: user.id,
@@ -784,7 +815,7 @@ http.createServer(async (req, res) => {
         if (!msgs.length || msgs[msgs.length - 1].role !== 'user') return send(res, 400, { error: 'Escribe una pregunta.' });
         while (msgs.length && msgs[0].role !== 'user') msgs.shift();
         if (!askAllowed(user.id)) return send(res, 429, { error: `Llegaste al límite de ${ASK_LIMIT} preguntas por hoy. Vuelve mañana.` });
-        try { return send(res, 200, { answer: await askClaude(msgs) }); }
+        try { return send(res, 200, { answer: await askClaude(msgs, b.lang === 'en' ? 'en' : 'es') }); }
         catch (e) { console.error('Asistente:', e.message); return send(res, 502, { error: 'El asistente no respondió. Intenta de nuevo en un momento.' }); }
       }
       if (p === '/api/bets' && req.method === 'GET') {
@@ -812,7 +843,7 @@ http.createServer(async (req, res) => {
     if (p === '/terminos') {
       const t = fs.readFileSync(path.join(__dirname, 'terminos.html'), 'utf8')
         .replaceAll('{{CONTACT}}', E.CONTACT_EMAIL || 'el correo de contacto de BetVision')
-        .replaceAll('{{PRICE}}', E.PRICE_LABEL || '$99 al mes')
+        .replaceAll('{{PRICE}}', E.PRICE_LABEL || '$9.99 al mes')
         .replaceAll('{{TRIAL}}', String(TRIAL_DAYS))
         .replaceAll('{{DATE}}', E.TERMS_DATE || '26 de septiembre de 2026');
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
