@@ -23,6 +23,14 @@ router.get("/", async (req, res) => {
         ? { OR: [{ name: { contains: String(search), mode: "insensitive" } }, { mrn: { contains: String(search), mode: "insensitive" } }] }
         : {})
     },
+    // The list leaves out the big ID/insurance files so it stays fast;
+    // open one patient (GET /patients/:id) to get those.
+    select: {
+      id: true, clinicId: true, name: true, dob: true, mrn: true,
+      allergies: true, meds: true, vitals: true, visits: true,
+      photo: true, idDocumentName: true, insuranceDocumentName: true,
+      createdById: true, createdAt: true
+    },
     orderBy: { name: "asc" }
   });
   res.json(patients);
