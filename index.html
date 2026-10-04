@@ -6,7 +6,7 @@
 <title>VitaPulse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&family=Lato:wght@400;700&family=Montserrat:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: linear-gradient(160deg, #EAF0FF 0%, #F1EAFB 45%, #FBEAF2 100%);
@@ -469,11 +469,741 @@
     .vitals-grid { grid-template-columns: repeat(2, 1fr); }
     .topbar { padding: 14px 20px; }
   }
+
+  /* ---- Landing page (shown before login) ---- */
+  .lp-wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .lp-header { position: sticky; top: 0; z-index: 20; background: var(--surface-solid);
+    -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); border-bottom: 1px solid var(--border); }
+  .lp-header .lp-wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 64px; }
+  .lp-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+  .lp-nav { display: flex; gap: 22px; font-size: 14px; }
+  .lp-nav a { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+  .lp-nav a:hover { color: var(--text); }
+  .lp-actions { display: flex; gap: 8px; }
+  .lp-hero { padding: 56px 0 44px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+  .lp-hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; }
+  .lp-hero p.lp-lead { font-size: 17px; line-height: 1.55; color: var(--text-muted); margin: 0 0 26px; max-width: 520px; }
+  .lp-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn.lp-lg { padding: 13px 22px; font-size: 15px; }
+  .lp-mock { background: var(--surface); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 20px; }
+  .lp-mock-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 600; }
+  .lp-mock-head small { font-weight: 400; color: var(--text-muted); font-size: 11.5px; }
+  .lp-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .lp-chip { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .lp-chip b { display: block; font-size: 22px; color: var(--accent-strong); }
+  .lp-chip span { font-size: 12px; color: var(--text-muted); }
+  .lp-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+  .lp-row .t { width: 66px; color: var(--text-muted); font-size: 12.5px; }
+  .lp-row .n { flex: 1; font-weight: 500; }
+  .lp-tag { background: var(--accent-light); color: var(--accent-strong); border-radius: 999px; padding: 3px 10px; font-size: 11.5px; font-weight: 500; }
+  .lp-section { padding: 48px 0; }
+  .lp-section h2 { text-align: center; font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 10px; }
+  .lp-sub { text-align: center; color: var(--text-muted); font-size: 15px; margin: 0 auto 30px; max-width: 560px; line-height: 1.5; }
+  .lp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .lp-card { background: var(--surface); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-sm); }
+  .lp-card h3 { font-size: 16px; margin: 14px 0 6px; font-weight: 600; }
+  .lp-card p { font-size: 13.5px; line-height: 1.5; color: var(--text-muted); margin: 0; }
+  .lp-ico { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-light); color: var(--accent-strong);
+    display: flex; align-items: center; justify-content: center; }
+  .lp-ico svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .lp-practice { display: flex; align-items: center; gap: 12px; padding: 16px 18px; font-weight: 500; font-size: 14.5px; }
+  .lp-practice .lp-ico { width: 38px; height: 38px; flex-shrink: 0; }
+  .lp-step-n { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; }
+  .lp-price { max-width: 420px; margin: 0 auto; text-align: center; padding: 32px 26px; }
+  .lp-price .amt { font-size: 52px; font-weight: 700; color: var(--accent-strong); line-height: 1; }
+  .lp-price .per { color: var(--text-muted); margin: 8px 0 18px; font-size: 14.5px; }
+  .lp-footer { border-top: 1px solid var(--border); padding: 28px 0 40px; margin-top: 24px; }
+  .lp-footer p { font-size: 12.5px; color: var(--text-muted); line-height: 1.55; max-width: 720px; margin: 10px 0 0; }
+  @media (max-width: 860px) {
+    .lp-hero { grid-template-columns: 1fr; padding-top: 36px; }
+    .lp-nav { display: none; }
+  }
+
+  /* =====================================================================
+     Clinical "workspace" skin: white top bar, teal band, orange actions,
+     drawer menu, patient chart with summary strip and left section list.
+     (Loaded last on purpose so it overrides the earlier look.)
+     ===================================================================== */
+  :root {
+    --bg: #F2F4F8;
+    --surface: #FFFFFF;
+    --surface-solid: #FFFFFF;
+    --surface-alt: #F3F5F9;
+    --border: #E1E5EC;
+    --text: #2B2F3A;
+    --text-muted: #667085;
+    --accent: #3AA6AE;
+    --accent-strong: #2B8A92;
+    --accent-light: #E2F3F4;
+    --alert: #D9435F;
+    --alert-light: #FCE8EC;
+    --focus: #3AA6AE;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow-sm: 0 1px 2px rgba(16,24,40,0.06);
+    --shadow-md: 0 8px 22px rgba(16,24,40,0.12);
+    --blur: 0px;
+    --orange: #EE9208;
+    --orange-strong: #D67F00;
+    --band: #3F9AA1;
+    --tint-green: #E7F4EA; --tint-blue: #E5EFFB; --tint-pink: #FCE9E6; --tint-yellow: #FFF6D9; --tint-lav: #F0EAFB;
+    --sidebar-bg: #FFFFFF;
+    --sidebar-surface: #F3F5F9;
+    --sidebar-active: #E2F3F4;
+    --sidebar-active-text: #2B8A92;
+    --sidebar-text: #2B2F3A;
+    --sidebar-text-muted: #4B5563;
+    --sidebar-accent: #3AA6AE;
+    --sidebar-border: #E1E5EC;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161C; --surface: #1B212A; --surface-solid: #1B212A; --surface-alt: #232A35; --border: #2E3643;
+      --text: #E6E9EF; --text-muted: #9AA3B2; --accent: #4DB8C0; --accent-strong: #7FD0D6; --accent-light: #1F393D;
+      --alert: #F0839C; --alert-light: #3A2333; --focus: #4DB8C0;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.35); --shadow-md: 0 10px 24px rgba(0,0,0,0.45);
+      --band: #2C747A;
+      --tint-green: #1E3326; --tint-blue: #1E2C40; --tint-pink: #3A2523; --tint-yellow: #38321C; --tint-lav: #2C2640;
+      --sidebar-bg: #1B212A; --sidebar-surface: #232A35; --sidebar-active: #1F393D; --sidebar-active-text: #7FD0D6;
+      --sidebar-text: #E6E9EF; --sidebar-text-muted: #B4BCC9; --sidebar-accent: #4DB8C0; --sidebar-border: #2E3643;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161C; --surface: #1B212A; --surface-solid: #1B212A; --surface-alt: #232A35; --border: #2E3643;
+    --text: #E6E9EF; --text-muted: #9AA3B2; --accent: #4DB8C0; --accent-strong: #7FD0D6; --accent-light: #1F393D;
+    --alert: #F0839C; --alert-light: #3A2333; --focus: #4DB8C0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.35); --shadow-md: 0 10px 24px rgba(0,0,0,0.45);
+    --band: #2C747A;
+    --tint-green: #1E3326; --tint-blue: #1E2C40; --tint-pink: #3A2523; --tint-yellow: #38321C; --tint-lav: #2C2640;
+    --sidebar-bg: #1B212A; --sidebar-surface: #232A35; --sidebar-active: #1F393D; --sidebar-active-text: #7FD0D6;
+    --sidebar-text: #E6E9EF; --sidebar-text-muted: #B4BCC9; --sidebar-accent: #4DB8C0; --sidebar-border: #2E3643;
+  }
+
+  body { font-family: 'Lato', 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); }
+  h1, h2, .serif { font-family: 'Lato', 'Inter', system-ui, sans-serif; letter-spacing: 0; }
+  .stat-num { font-family: 'Lato', 'Inter', system-ui, sans-serif; color: var(--accent-strong); }
+
+  /* Buttons: orange = main action, grey = secondary */
+  .btn { background: var(--orange); color: #fff; font-weight: 700; }
+  .btn:hover { background: var(--orange-strong); }
+  .btn.secondary { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+  .btn.secondary:hover { background: var(--border); }
+  .toast { background: #25303B; }
+
+  /* Flat cards */
+  .panel, .stat-card, .template-card, .lp-card, .lp-mock { box-shadow: var(--shadow-sm); }
+  .panel-head { padding: 14px 20px; }
+  .panel-head h2 { font-size: 15px; font-weight: 700; }
+  .panel-body { padding: 4px 20px 14px; }
+  .stat-card { padding: 16px 18px; }
+
+  /* Tables */
+  .table { border-collapse: separate; border-spacing: 0; }
+  .table th { background: var(--surface-alt); color: var(--text); font-weight: 700; font-size: 12.5px; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  .table td { padding: 10px 14px; }
+  .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .table-card .table tr:last-child td { border-bottom: none; }
+  .row-avatar { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface-alt); border: 1px solid var(--border); color: var(--text-muted); font-size: 11px; font-weight: 700;
+    overflow: hidden; margin-right: 10px; vertical-align: middle; }
+  .row-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .page-head h1 { font-size: 22px; margin: 0; font-weight: 700; }
+
+  /* Inputs */
+  .field input, .field select, .field textarea, .search-input { background: var(--surface-solid); border-radius: var(--radius-sm); }
+
+  /* ---- Top bar ---- */
+  .topbar { height: 58px; padding: 0 18px; gap: 14px; background: var(--surface-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1; }
+  .launcher-btn { width: 38px; height: 38px; border-radius: var(--radius-sm); background: none; border: none; color: var(--text); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .launcher-btn:hover { background: var(--surface-alt); }
+  .top-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .top-search, .hero-search-field { display: flex; align-items: center; gap: 8px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 999px; padding: 0 14px; height: 38px; width: min(340px, 36vw); color: var(--text-muted); }
+  .top-search input, .hero-search-field input { border: none; background: none; outline: none; width: 100%; font-size: 13.5px; color: var(--text); }
+  body.is-home .top-search { display: none; }
+  .topbar-date { font-size: 12px; margin-right: 14px; white-space: nowrap; }
+  .clinic-name { font-size: 13.5px; font-weight: 600; margin-right: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  .clinic-name:empty { display: none; }
+  .theme-toggle { margin-left: 8px; background: none; border: none; width: 34px; height: 34px; }
+  .theme-toggle:hover { background: var(--surface-alt); }
+  .clinician { padding-left: 6px; }
+
+  /* ---- Drawer menu (replaces the always-open sidebar) ---- */
+  .sidebar, .sidebar.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 270px; height: 100vh; z-index: 40; transform: translateX(-102%);
+    transition: transform .22s ease; background: var(--sidebar-bg); backdrop-filter: none; -webkit-backdrop-filter: none;
+    box-shadow: var(--shadow-md); padding: 22px 16px; overflow-y: auto; overflow-x: hidden; flex-direction: column; align-items: stretch; }
+  .sidebar::before, .sidebar::after { display: none; }
+  body.nav-open .sidebar { transform: none; }
+  .nav-overlay { position: fixed; inset: 0; background: rgba(16,24,40,0.38); z-index: 35; display: none; }
+  body.nav-open .nav-overlay { display: block; }
+  .brand-tag { margin-bottom: 18px; }
+  .nav { flex-direction: column; }
+  .nav button { color: var(--sidebar-text); font-weight: 600; font-size: 14px; padding: 10px 12px; }
+  .nav button svg { stroke: var(--accent); }
+  .nav button.active svg { stroke: var(--sidebar-active-text); }
+  .rx-glyph { color: var(--accent); }
+  .nav button.active .rx-glyph { color: var(--sidebar-active-text); }
+  .sidebar-footer { display: block; }
+  @media (max-width: 780px) {
+    .sidebar { width: 270px; height: 100vh; position: fixed; flex-direction: column; align-items: stretch; padding: 22px 16px; overflow-x: hidden; overflow-y: auto; }
+    .brand, .brand-tag { display: flex; }
+    .brand-tag { display: block; }
+    .sidebar-footer { display: block; }
+    .nav { flex-direction: column; gap: 3px; }
+    .topbar { padding: 0 10px; gap: 8px; }
+    .top-brand span { display: none; }
+    .topbar-date, .clinic-name, .clinician span { display: none; }
+    .top-search { width: 100%; }
+  }
+
+  /* ---- Home: teal band + big tiles ---- */
+  .hero { background: var(--band); color: #fff; border-radius: var(--radius); padding: 24px 26px 26px; margin-bottom: 22px; }
+  .hero h1 { font-weight: 700; font-size: clamp(22px, 3.4vw, 28px); margin-bottom: 4px; }
+  .hero p { color: rgba(255,255,255,0.92); margin-bottom: 16px; }
+  .hero-search { display: flex; align-items: center; gap: 12px; }
+  .hero-search-field { width: 100%; max-width: 640px; height: 46px; background: #fff; border-color: transparent; color: #667085; }
+  .hero-search-field input { font-size: 15px; color: #2B2F3A; }
+  .hero-add { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.7); background: transparent; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hero-add:hover { background: rgba(255,255,255,0.18); }
+  .quick-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; margin-bottom: 24px; }
+  .quick-tile { background: transparent; border: none; box-shadow: none; padding: 14px 6px; gap: 10px; }
+  .quick-tile:hover { background: var(--surface); box-shadow: var(--shadow-sm); transform: none; }
+  .quick-tile-icon { width: 58px; height: 58px; background: var(--accent-light); }
+  .quick-tile-icon svg { width: 28px; height: 28px; }
+  .quick-tile-icon .rx-glyph { font-size: 26px; width: auto; color: var(--accent-strong); }
+  .quick-tile-label { font-size: 13px; font-weight: 600; }
+
+  /* ---- Patient chart ---- */
+  .pt-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pt-box { border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12.5px; line-height: 1.5; min-width: 130px; border: 1px solid var(--border); }
+  .pt-box b { display: block; font-size: 12px; font-weight: 700; margin-bottom: 1px; }
+  .pt-box i { font-style: normal; font-weight: 700; }
+  .pt-id { background: var(--tint-green); display: flex; align-items: center; gap: 12px; flex: 2 1 280px; }
+  .pt-id h1 { font-size: 19px; margin: 0 0 2px; }
+  .pt-allergy { background: var(--tint-blue); flex: 1 1 150px; }
+  .pt-visits { background: var(--tint-pink); flex: 1 1 150px; }
+  .pt-vitals { background: var(--tint-yellow); flex: 1 1 120px; }
+  .pt-balance { background: var(--tint-lav); flex: 1 1 130px; }
+  .pt-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 14px; }
+  .pt-layout { display: grid; grid-template-columns: 190px 1fr; gap: 18px; align-items: start; }
+  .pt-nav { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 0; box-shadow: var(--shadow-sm); position: sticky; top: 74px; }
+  .pt-nav button { display: block; width: 100%; text-align: left; background: none; border: none; border-left: 3px solid transparent; padding: 10px 16px; font-size: 13.5px; color: var(--text); }
+  .pt-nav button:hover { background: var(--surface-alt); }
+  .pt-nav button.active { color: var(--accent-strong); border-left-color: var(--accent); background: var(--accent-light); font-weight: 700; }
+  .pt-main { min-width: 0; }
+  .patient-photo { width: 52px; height: 52px; background: var(--surface); }
+  @media (max-width: 860px) {
+    .pt-layout { grid-template-columns: 1fr; }
+    .pt-nav { position: static; display: flex; overflow-x: auto; padding: 0; }
+    .pt-nav button { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; width: auto; }
+    .pt-nav button.active { border-bottom-color: var(--accent); }
+  }
+  @media (min-width: 1000px) { #view-form-fill .form-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* Landing page follows the same palette */
+  .lp-header { background: var(--surface-solid); }
+  .lp-mock { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .lp-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+  /* =====================================================================
+     Look #2: teal + navy, soft rounded shapes, round search button,
+     category-style tiles, calendar with marks, navy "your date" panel.
+     ===================================================================== */
+  :root {
+    --bg: #F4F9FA;
+    --surface: #FFFFFF;
+    --surface-solid: #FFFFFF;
+    --surface-alt: #EEF5F6;
+    --border: #DCE9EB;
+    --text: #1B2A41;
+    --text-muted: #5F7080;
+    --accent: #4FAAB3;
+    --accent-strong: #2A8590;
+    --accent-light: #D5EAEC;
+    --band: #52ADB5;
+    --navy: #0E1F45;
+    --navy-2: #1B3266;
+    --pink: #E0388F;
+    --orange: #0E1F45;
+    --orange-strong: #1B3266;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --shadow-sm: 0 2px 8px rgba(14,31,69,0.06);
+    --shadow-md: 0 12px 28px rgba(14,31,69,0.14);
+    --tint-green: #DDF0F1; --tint-blue: #E4EBF8; --tint-pink: #FBE4F0; --tint-yellow: #FFF3D6; --tint-lav: #E9E7F7;
+    --focus: #4FAAB3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1522; --surface: #172033; --surface-solid: #172033; --surface-alt: #1E2A40; --border: #2A3852;
+      --text: #E8EEF6; --text-muted: #9FB0C4; --accent: #5BBAC3; --accent-strong: #86D3DA; --accent-light: #1F3B47;
+      --band: #2F7C85; --navy: #0A1530; --navy-2: #1B3266; --orange: #2D4C93; --orange-strong: #3B5FB5;
+      --tint-green: #1D3A3D; --tint-blue: #1E2C45; --tint-pink: #3A2036; --tint-yellow: #38321C; --tint-lav: #2A2745;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1522; --surface: #172033; --surface-solid: #172033; --surface-alt: #1E2A40; --border: #2A3852;
+    --text: #E8EEF6; --text-muted: #9FB0C4; --accent: #5BBAC3; --accent-strong: #86D3DA; --accent-light: #1F3B47;
+    --band: #2F7C85; --navy: #0A1530; --navy-2: #1B3266; --orange: #2D4C93; --orange-strong: #3B5FB5;
+    --tint-green: #1D3A3D; --tint-blue: #1E2C45; --tint-pink: #3A2036; --tint-yellow: #38321C; --tint-lav: #2A2745;
+  }
+
+  h1, h2, .serif, .top-brand, .lp-brand, .stat-num, .lp-price .amt { font-family: 'Montserrat', 'Lato', 'Inter', system-ui, sans-serif; }
+  .btn { background: var(--navy); color: #fff; border-radius: 999px; padding: 10px 20px; }
+  .btn:hover { background: var(--navy-2); }
+  .btn.secondary { background: var(--surface); color: var(--navy); border: 1.5px solid var(--border); }
+  :root[data-theme="dark"] .btn.secondary { color: var(--text); }
+  .btn.small { padding: 7px 14px; }
+  .panel, .stat-card, .template-card, .lp-card, .table-card { border-radius: var(--radius); }
+  .panel-head h2, .page-head h1 { color: var(--accent-strong); }
+  .section-title { font-size: 17px; margin: 0 0 8px; color: var(--accent-strong); font-weight: 700; }
+
+  /* Home: white card, big teal circle, round search button */
+  .hero { position: relative; overflow: hidden; background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm); padding: 26px 26px 28px; isolation: isolate; }
+  .hero::after { content: ""; position: absolute; top: -110px; right: -80px; width: 330px; height: 330px; border-radius: 50%; background: var(--band); z-index: -1; }
+  .hero h1 { color: var(--accent-strong); }
+  .hero p { color: var(--text-muted); }
+  .hero-search { gap: 10px; }
+  .hero-search-field { background: #ECEEF0; border-color: transparent; height: 48px; max-width: 520px; flex: 1; }
+  .hero-search-field input { color: #1B2A41; }
+  .hero-go, .hero-add { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: none; }
+  .hero-go { background: var(--navy); color: #fff; }
+  .hero-go:hover { background: var(--navy-2); }
+  .hero-add { background: var(--accent); color: #fff; }
+  .hero-add:hover { background: var(--accent-strong); }
+  :root[data-theme="dark"] .hero-search-field { background: #26324A; }
+  :root[data-theme="dark"] .hero-search-field input { color: #E8EEF6; }
+
+  .quick-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; margin-bottom: 26px; }
+  .quick-tile { padding: 4px; gap: 8px; border-radius: var(--radius); }
+  .quick-tile:hover { background: transparent; box-shadow: none; }
+  .quick-tile-icon { width: 76px; height: 76px; border-radius: 22px; background: var(--accent-light); transition: background .15s ease; }
+  .quick-tile-icon svg, .quick-tile-icon .rx-glyph { stroke: var(--accent-strong); color: var(--accent-strong); }
+  .quick-tile:hover .quick-tile-icon, .quick-tile:focus-visible .quick-tile-icon { background: var(--accent); }
+  .quick-tile:hover .quick-tile-icon svg { stroke: #fff; }
+  .quick-tile:hover .quick-tile-icon .rx-glyph { color: #fff; }
+  .quick-tile-label { color: var(--accent-strong); font-weight: 700; font-size: 12.5px; }
+  .stat-card { background: var(--accent-light); border: none; box-shadow: none; }
+  .stat-num { color: var(--navy); }
+  :root[data-theme="dark"] .stat-num { color: var(--accent-strong); }
+
+  /* "Specialist"-style teal panel for today's schedule */
+  .panel-teal { background: var(--band); border: none; color: #fff; }
+  .panel-teal .panel-head { border-bottom-color: rgba(255,255,255,0.22); }
+  .panel-teal .panel-head h2 { color: #fff; }
+  .panel-teal .row-item { border-bottom-color: rgba(255,255,255,0.2); }
+  .panel-teal .row-icon { background: #fff; color: var(--accent-strong); border-radius: 12px; width: 38px; height: 38px; }
+  .panel-teal .row-title { color: #fff; font-weight: 700; }
+  .panel-teal .row-sub, .panel-teal .row-time { color: rgba(255,255,255,0.85); }
+  .panel-teal .tag { background: rgba(255,255,255,0.2); color: #fff; }
+  .panel-teal .empty-state { color: rgba(255,255,255,0.9); }
+  .panel-teal .btn.secondary { background: rgba(255,255,255,0.18); color: #fff; border-color: rgba(255,255,255,0.4); }
+
+  /* Tables */
+  .table th { background: transparent; color: var(--accent-strong); font-size: 12.5px; }
+  .row-avatar { width: 34px; height: 34px; border-radius: 12px; background: var(--accent-light); color: var(--accent-strong); border: none; }
+
+  /* Patient chart */
+  .pt-box { border: none; border-radius: 14px; }
+  .pt-nav { border-radius: var(--radius); }
+  .pt-nav button.active { background: var(--accent-light); }
+  .patient-photo { border-radius: 16px; }
+
+  /* Calendar: rounded squares, teal marks for days with visits */
+  .calendar-weekdays span { color: var(--accent-strong); font-weight: 700; }
+  .calendar-grid { gap: 6px; }
+  .cal-day { background: transparent; border: none; border-radius: 12px; color: var(--text-muted); font-weight: 600; }
+  .cal-day:hover { background: var(--accent-light); }
+  .cal-day.is-today { box-shadow: inset 0 0 0 2px var(--navy); color: var(--navy); }
+  :root[data-theme="dark"] .cal-day.is-today { box-shadow: inset 0 0 0 2px var(--accent-strong); color: var(--accent-strong); }
+  .cal-day.has-appt { background: var(--accent); color: #fff; }
+  .cal-day.has-appt .cal-dot { background: #fff; }
+  .cal-day.selected, .cal-day.has-appt.selected { background: var(--navy); color: #fff; box-shadow: none; }
+  :root[data-theme="dark"] .cal-day.selected, :root[data-theme="dark"] .cal-day.has-appt.selected { background: #2D4C93; }
+  .cal-legend { display: flex; gap: 16px; justify-content: center; font-size: 11.5px; color: var(--text-muted); margin: 12px 0 18px; }
+  .cal-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; }
+
+  /* Navy "your date" panel */
+  .day-panel { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 22px; margin-top: 18px; box-shadow: var(--shadow-md); }
+  :root[data-theme="dark"] .day-panel { background: #0A1530; border: 1px solid var(--border); }
+  .day-panel-head { display: flex; gap: 22px; align-items: stretch; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.16); }
+  .day-big { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 96px; padding-right: 22px; border-right: 1px solid rgba(255,255,255,0.22); }
+  .day-big b { font-size: 52px; line-height: 1; font-weight: 700; }
+  .day-big span { font-size: 15px; margin-top: 4px; }
+  .day-big small { font-size: 11.5px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .day-slots { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+  .slot-group b { display: block; font-size: 13px; margin-bottom: 5px; }
+  .slot-times { display: flex; gap: 8px; flex-wrap: wrap; }
+  .slot-chip { font-size: 12.5px; padding: 4px 11px; border-radius: 8px; background: rgba(255,255,255,0.12); }
+  .slot-chip.busy { background: var(--band); color: #fff; font-weight: 700; }
+  .slot-empty { font-size: 13.5px; color: rgba(255,255,255,0.8); }
+  .day-list .row-item { border-bottom-color: rgba(255,255,255,0.14); }
+  .day-list .row-icon { background: rgba(255,255,255,0.14); color: #fff; }
+  .day-list .row-title { color: #fff; font-weight: 700; }
+  .day-list .row-sub, .day-list .row-time { color: rgba(255,255,255,0.75); }
+  .day-list .tag { background: rgba(255,255,255,0.14); color: #fff; }
+  .day-list .empty-state { color: rgba(255,255,255,0.8); padding: 14px 0 0; }
+  .day-list .btn.secondary { background: var(--band); color: #fff; border-color: transparent; }
+
+  /* Landing page */
+  .lp-hero { position: relative; isolation: isolate; }
+  .lp-hero::after { content: ""; position: absolute; right: -90px; top: -70px; width: 460px; height: 460px; border-radius: 50%; background: var(--band); opacity: 0.2; z-index: -1; }
+  .lp-hero h1, .lp-section h2 { color: var(--accent-strong); }
+  .lp-mock { border-radius: 26px; }
+  .lp-chip b { color: var(--navy); }
+  :root[data-theme="dark"] .lp-chip b { color: var(--accent-strong); }
+  .lp-ico { border-radius: 16px; background: var(--accent-light); color: var(--accent-strong); }
+  .lp-price .amt { color: var(--navy); }
+  :root[data-theme="dark"] .lp-price .amt { color: var(--accent-strong); }
+  .lp-step-n { background: var(--navy); }
+  .lp-tag { background: var(--accent-light); color: var(--accent-strong); }
+  .lp-cta .btn.lp-lg { padding: 13px 26px; }
+
+  /* Keep the schedule compact and centered, like a phone-sized calendar */
+  #view-schedule > * { max-width: 560px; margin-left: auto !important; margin-right: auto !important; }
+  #view-schedule .detail-head h1 { color: var(--accent-strong); font-weight: 700 !important; }
+  .cal-day { font-size: 14px; }
+  @media (max-width: 700px) {
+    .hero::after { width: 150px; height: 150px; top: -118px; right: -48px; }
+    .lp-hero::after { width: 300px; height: 300px; right: -120px; top: -40px; }
+  }
+
+  /* ---- Landing page v2: illustrations and content sections ---- */
+  html { scroll-behavior: smooth; }
+  #landing section[id] { scroll-margin-top: 76px; }
+  .lp-narrow { max-width: 760px; }
+  .lp-av { display: block; width: 76px; height: 76px; border-radius: 50%; background: var(--accent-light); flex-shrink: 0; overflow: hidden; }
+  .lp-av.sm { width: 48px; height: 48px; }
+  .lp-av.lg { width: 92px; height: 92px; }
+  .lp-av.xl { width: 128px; height: 128px; border: 4px solid rgba(255,255,255,0.9); background: #CFE6E9; }
+  .lp-hero { grid-template-columns: 1.05fr 1fr; padding-bottom: 56px; }
+  .lp-hero::after { display: none; }
+  .lp-checks { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text); }
+  .lp-checks li { position: relative; padding-left: 26px; }
+  .lp-checks li::before { content: "\2713"; position: absolute; left: 0; top: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .lp-checks.center { align-items: center; margin: 0 0 22px; text-align: left; }
+  .lp-hero-points { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: 13px; color: var(--text-muted); }
+  .lp-scene { position: relative; width: 100%; max-width: 520px; margin-left: auto; }
+  .lp-scene-svg { display: block; width: 100%; height: auto; border-radius: 34px; box-shadow: var(--shadow-md); }
+  .lp-float { position: absolute; display: flex; align-items: center; gap: 10px; background: var(--surface-solid); border-radius: 16px; padding: 10px 14px; box-shadow: var(--shadow-md); font-size: 12.5px; }
+  .lp-float b { display: block; font-size: 13px; }
+  .lp-float small { color: var(--text-muted); font-size: 11.5px; }
+  .lp-float.a { left: -7%; bottom: 12%; }
+  .lp-float.b { right: -3%; top: 9%; }
+  .lp-float .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--pink); flex-shrink: 0; }
+  .lp-float .chk { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  .lp-show { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; margin: 44px 0; }
+  .lp-show.rev .lp-show-media { order: -1; }
+  .lp-show-text h3 { font-size: clamp(21px, 2.6vw, 27px); margin: 0 0 10px; color: var(--navy); font-family: 'Montserrat','Lato','Inter',system-ui,sans-serif; font-weight: 700; }
+  :root[data-theme="dark"] .lp-show-text h3 { color: var(--accent-strong); }
+  .lp-show-text p { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin: 0; }
+  .lp-win { background: var(--surface-solid); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow-md); padding: 0 0 16px; overflow: hidden; }
+  .lp-win-bar { display: flex; align-items: center; gap: 6px; padding: 12px 16px; background: var(--accent-light); }
+  .lp-win-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); opacity: .55; }
+  .lp-win-bar em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--accent-strong); }
+  .lp-chart-top { display: flex; align-items: center; gap: 12px; padding: 16px 18px 8px; }
+  .lp-chart-top b { display: block; font-size: 15px; }
+  .lp-chart-top small { color: var(--text-muted); font-size: 12px; }
+  .lp-chart-boxes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 8px 18px 4px; }
+  .lp-chart-boxes span { border-radius: 12px; padding: 8px 10px; font-size: 11.5px; line-height: 1.45; }
+  .lp-chart-boxes b { display: block; font-size: 11px; }
+  .lp-chart-boxes .b1 { background: var(--tint-blue); } .lp-chart-boxes .b2 { background: var(--tint-pink); }
+  .lp-chart-boxes .b3 { background: var(--tint-yellow); } .lp-chart-boxes .b4 { background: var(--tint-lav); }
+  .lp-chart-rows { padding: 8px 18px 0; }
+  .lp-chart-rows div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .lp-chart-rows div:last-child { border-bottom: none; }
+  .lp-chart-rows small { color: var(--text-muted); }
+  .lp-mini-head { padding: 14px 18px 6px; font-weight: 700; color: var(--accent-strong); }
+  .lp-mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 18px; }
+  .lp-mini-cal.wk span { text-align: center; font-size: 10.5px; font-weight: 700; color: var(--accent-strong); }
+  .lp-mini-cal .d { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; border-radius: 9px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+  .lp-mini-cal .d.on { background: var(--accent); color: #fff; }
+  .lp-mini-cal .d.sel { background: var(--navy); color: #fff; }
+  .lp-mini-day { display: flex; gap: 16px; align-items: center; margin: 14px 18px 0; padding: 14px 16px; background: var(--navy); color: #fff; border-radius: 16px; }
+  .lp-mini-day .big { text-align: center; padding-right: 16px; border-right: 1px solid rgba(255,255,255,.25); }
+  .lp-mini-day .big b { display: block; font-size: 30px; line-height: 1; }
+  .lp-mini-day .big span { font-size: 11px; opacity: .85; }
+  .lp-mini-day .slots b { display: block; font-size: 12px; margin-bottom: 6px; }
+  .lp-mini-day .chip { display: inline-block; margin-right: 6px; padding: 3px 9px; border-radius: 8px; background: var(--band); font-size: 11.5px; font-weight: 700; }
+  .lp-note { padding: 16px 18px 4px; }
+  .lp-note b { display: block; margin-bottom: 8px; font-size: 14px; }
+  .lp-note p { display: flex; gap: 10px; margin: 0; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .lp-note p i { font-style: normal; width: 22px; height: 22px; border-radius: 7px; background: var(--accent-light); color: var(--accent-strong); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .lp-rx { margin: 12px 18px 0; padding: 12px 14px; border-radius: 14px; background: var(--tint-green); font-size: 13px; }
+  .lp-rx b { display: block; margin-bottom: 3px; }
+  .lp-rx span { color: var(--accent-strong); font-size: 12px; font-weight: 700; }
+
+  .lp-step, .lp-role, .lp-pcard { text-align: left; }
+  .lp-step { position: relative; }
+  .lp-step .lp-step-n { position: absolute; top: 18px; right: 18px; width: 30px; height: 30px; font-size: 14px; }
+  .lp-step .lp-av { margin-bottom: 14px; }
+  .lp-role .lp-av { margin-bottom: 14px; }
+  .lp-pcard { display: flex; align-items: center; gap: 16px; }
+  .lp-pcard b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .lp-pcard small { display: block; color: var(--text-muted); font-size: 12.5px; margin-top: 6px; }
+  .lp-pcard .tag { margin-top: 6px; display: inline-block; }
+
+  .lp-faq { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 10px; padding: 0 20px; }
+  .lp-faq summary { cursor: pointer; padding: 16px 0; font-weight: 700; font-size: 15px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  .lp-faq summary::-webkit-details-marker { display: none; }
+  .lp-faq summary::after { content: "+"; font-size: 20px; line-height: 1; color: var(--accent-strong); }
+  .lp-faq[open] summary::after { content: "\2212"; }
+  .lp-faq p { margin: 0 0 16px; color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+
+  .lp-cta-band { background: var(--navy); color: #fff; border-radius: 30px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; overflow: hidden; position: relative; }
+  :root[data-theme="dark"] .lp-cta-band { background: #0A1530; border: 1px solid var(--border); }
+  .lp-cta-band h2 { color: #fff; text-align: left; font-size: clamp(22px, 3vw, 30px); max-width: 520px; margin: 0 0 8px; }
+  .lp-cta-band p { color: rgba(255,255,255,.8); margin: 0 0 20px; }
+  .btn.light { background: #fff; color: var(--navy); }
+  .btn.light:hover { background: var(--accent-light); }
+  .lp-band-avatars { display: flex; }
+  .lp-band-avatars .lp-av + .lp-av { margin-left: -26px; }
+
+  .lp-foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 28px; margin-bottom: 18px; }
+  .lp-foot-grid b { display: block; font-size: 13px; margin-bottom: 10px; }
+  .lp-foot-grid a { display: block; color: var(--text-muted); text-decoration: none; font-size: 13.5px; margin-bottom: 8px; }
+  .lp-foot-grid a:hover { color: var(--accent-strong); }
+  .lp-foot-grid p { margin: 8px 0 0; }
+
+  .lp-hero { padding-left: 20px; padding-right: 20px; }
+  .lp-actions .btn { white-space: nowrap; }
+  @media (max-width: 480px) { .lp-header .lp-brand span { display: none; } .lp-hero h1 { font-size: 34px; } }
+  .lp-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .lp-pcard { min-width: 0; }
+  .lp-pcard > div { min-width: 0; }
+  .lp-pcard .tag { white-space: normal; }
+  #landing { overflow-x: clip; }
+  @media (max-width: 980px) { .lp-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .lp-grid-3 { grid-template-columns: 1fr; } }
+
+  @media (max-width: 860px) {
+    .lp-hero { grid-template-columns: 1fr; }
+    .lp-scene { margin: 0 auto; max-width: 430px; }
+    .lp-float.a { left: -2%; } .lp-float.b { right: -2%; }
+    .lp-show { grid-template-columns: 1fr; gap: 22px; margin: 34px 0; }
+    .lp-show.rev .lp-show-media { order: 0; }
+    .lp-foot-grid { grid-template-columns: 1fr; }
+    .lp-cta-band { padding: 28px; }
+    .lp-band-avatars { display: none; }
+  }
+
+  /* Same dark tweaks when the device itself is in dark mode */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .btn.secondary { color: var(--text); }
+    :root:not([data-theme="light"]) .hero-search-field { background: #26324A; }
+    :root:not([data-theme="light"]) .hero-search-field input { color: #E8EEF6; }
+    :root:not([data-theme="light"]) .stat-num { color: var(--accent-strong); }
+    :root:not([data-theme="light"]) .cal-day.is-today { box-shadow: inset 0 0 0 2px var(--accent-strong); color: var(--accent-strong); }
+    :root:not([data-theme="light"]) .cal-day.selected, :root[data-theme="dark"] .cal-day.has-appt.selected { background: #2D4C93; }
+    :root:not([data-theme="light"]) .day-panel { background: #0A1530; border: 1px solid var(--border); }
+    :root:not([data-theme="light"]) .lp-chip b { color: var(--accent-strong); }
+    :root:not([data-theme="light"]) .lp-price .amt { color: var(--accent-strong); }
+    :root:not([data-theme="light"]) .lp-show-text h3 { color: var(--accent-strong); }
+    :root:not([data-theme="light"]) .lp-cta-band { background: #0A1530; border: 1px solid var(--border); }
+  }
 </style>
 </head>
-<body>
+<body class="is-home">
 
-<div id="authScreen" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;">
+<div id="landing">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="av-maria" viewBox="0 0 120 120"><path d="M33 58 C28 28 46 17 60 17 C76 17 92 28 87 58 C86 74 90 88 92 100 L28 100 C30 88 34 74 33 58 Z" fill="#2A1A12"/><rect x="52" y="66" width="16" height="24" rx="7" fill="#D09A6E"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#52ADB5"/><path d="M47 84 Q60 101 73 84 Z" fill="#E3AE82"/><circle cx="38" cy="54" r="4.2" fill="#E3AE82"/><circle cx="82" cy="54" r="4.2" fill="#E3AE82"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#E3AE82"/><path d="M38 50 C40 32 52 27 62 27 C75 27 83 36 82 50 C76 41 68 37 60 39 C52 39 44 41 38 50 Z" fill="#2A1A12"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-james" viewBox="0 0 120 120"><rect x="52" y="66" width="16" height="24" rx="7" fill="#7A4A20"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#0E1F45"/><path d="M47 84 Q60 101 73 84 Z" fill="#8D5524"/><circle cx="38" cy="54" r="4.2" fill="#8D5524"/><circle cx="82" cy="54" r="4.2" fill="#8D5524"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#8D5524"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#15151F"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-priya" viewBox="0 0 120 120"><path d="M33 58 C28 28 46 17 60 17 C76 17 92 28 87 58 C86 74 90 88 92 100 L28 100 C30 88 34 74 33 58 Z" fill="#1B1B2F"/><rect x="52" y="66" width="16" height="24" rx="7" fill="#B27637"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#E0388F"/><path d="M47 84 Q60 101 73 84 Z" fill="#C68642"/><circle cx="38" cy="54" r="4.2" fill="#C68642"/><circle cx="82" cy="54" r="4.2" fill="#C68642"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#C68642"/><path d="M38 50 C40 32 52 27 62 27 C75 27 83 36 82 50 C76 41 68 37 60 39 C52 39 44 41 38 50 Z" fill="#1B1B2F"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-omar" viewBox="0 0 120 120"><rect x="52" y="66" width="16" height="24" rx="7" fill="#C58E58"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#F2C14E"/><path d="M47 84 Q60 101 73 84 Z" fill="#D9A066"/><circle cx="38" cy="54" r="4.2" fill="#D9A066"/><circle cx="82" cy="54" r="4.2" fill="#D9A066"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#D9A066"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#2B2B2B"/><path d="M39 56 C40 82 80 82 81 56 C78 68 70 72 60 72 C50 72 42 68 39 56 Z" fill="#2B2B2B"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#F5E6D8" stroke-width="2" fill="none" stroke-linecap="round"/><g fill="none" stroke="#0E1F45" stroke-width="1.8"><circle cx="51" cy="55" r="6.6"/><circle cx="69" cy="55" r="6.6"/><path d="M57.6 55h4.8"/></g></symbol><symbol id="av-linda" viewBox="0 0 120 120"><circle cx="60" cy="15" r="9.5" fill="#C9CED6"/><rect x="52" y="66" width="16" height="24" rx="7" fill="#E3B692"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#8E7CC3"/><path d="M47 84 Q60 101 73 84 Z" fill="#F3C9A5"/><circle cx="38" cy="54" r="4.2" fill="#F3C9A5"/><circle cx="82" cy="54" r="4.2" fill="#F3C9A5"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#F3C9A5"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#C9CED6"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/><g fill="none" stroke="#0E1F45" stroke-width="1.8"><circle cx="51" cy="55" r="6.6"/><circle cx="69" cy="55" r="6.6"/><path d="M57.6 55h4.8"/></g></symbol><symbol id="av-fatima" viewBox="0 0 120 120"><path d="M26 108 C22 58 34 18 60 16 C86 18 98 58 94 108 Z" fill="#2A8590"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#2A8590"/><circle cx="38" cy="54" r="4.2" fill="#E8B88A"/><circle cx="82" cy="54" r="4.2" fill="#E8B88A"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#E8B88A"/><path d="M36 52 C37 33 48 28 60 28 C73 28 84 33 84 52 C78 41 70 38 60 38 C50 38 42 41 36 52 Z" fill="#2A8590"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-docf" viewBox="0 0 120 120"><circle cx="60" cy="15" r="9.5" fill="#3B2417"/><rect x="52" y="66" width="16" height="24" rx="7" fill="#E0AD87"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#FFFFFF" stroke="#CFE0E4" stroke-width="1.5"/><path d="M46 84 L60 108 L74 84 Z" fill="#52ADB5"/><path d="M46 85 C45 104 60 108 60 112" stroke="#0E1F45" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M74 85 C75 104 60 108 60 112" stroke="#0E1F45" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="60" cy="114" r="4" fill="#0E1F45"/><circle cx="38" cy="54" r="4.2" fill="#F0C09A"/><circle cx="82" cy="54" r="4.2" fill="#F0C09A"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#F0C09A"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#3B2417"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-docm" viewBox="0 0 120 120"><rect x="52" y="66" width="16" height="24" rx="7" fill="#B27637"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#FFFFFF" stroke="#CFE0E4" stroke-width="1.5"/><path d="M46 84 L60 108 L74 84 Z" fill="#52ADB5"/><path d="M46 85 C45 104 60 108 60 112" stroke="#0E1F45" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M74 85 C75 104 60 108 60 112" stroke="#0E1F45" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="60" cy="114" r="4" fill="#0E1F45"/><circle cx="38" cy="54" r="4.2" fill="#C68642"/><circle cx="82" cy="54" r="4.2" fill="#C68642"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#C68642"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#15151F"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/><g fill="none" stroke="#0E1F45" stroke-width="1.8"><circle cx="51" cy="55" r="6.6"/><circle cx="69" cy="55" r="6.6"/><path d="M57.6 55h4.8"/></g></symbol><symbol id="av-staff" viewBox="0 0 120 120"><circle cx="38" cy="44" r="11" fill="#3B2417"/><circle cx="44" cy="30" r="12" fill="#3B2417"/><circle cx="58" cy="24" r="13" fill="#3B2417"/><circle cx="73" cy="28" r="12" fill="#3B2417"/><circle cx="82" cy="42" r="11" fill="#3B2417"/><circle cx="85" cy="56" r="9" fill="#3B2417"/><circle cx="35" cy="58" r="9" fill="#3B2417"/><rect x="52" y="66" width="16" height="24" rx="7" fill="#D09A6E"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#0E1F45"/><path d="M47 84 Q60 101 73 84 Z" fill="#E3AE82"/><rect x="78" y="96" width="19" height="11" rx="2.5" fill="#FFFFFF"/><rect x="81" y="99.5" width="10" height="2.2" rx="1" fill="#52ADB5"/><rect x="81" y="103" width="6" height="1.8" rx="0.9" fill="#9FB0C4"/><circle cx="38" cy="54" r="4.2" fill="#E3AE82"/><circle cx="82" cy="54" r="4.2" fill="#E3AE82"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#E3AE82"/><circle cx="46" cy="36" r="8" fill="#3B2417"/><circle cx="58" cy="32" r="9" fill="#3B2417"/><circle cx="71" cy="34" r="8" fill="#3B2417"/><circle cx="80" cy="42" r="6" fill="#3B2417"/><circle cx="40" cy="44" r="6" fill="#3B2417"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/></symbol><symbol id="av-mgr" viewBox="0 0 120 120"><rect x="52" y="66" width="16" height="24" rx="7" fill="#7A4A20"/><path d="M6 120 C6 94 30 84 60 84 C90 84 114 94 114 120 Z" fill="#0E1F45"/><path d="M47 84 Q60 101 73 84 Z" fill="#8D5524"/><circle cx="38" cy="54" r="4.2" fill="#8D5524"/><circle cx="82" cy="54" r="4.2" fill="#8D5524"/><ellipse cx="60" cy="52" rx="22" ry="25" fill="#8D5524"/><path d="M37 52 C34 26 50 20 61 20 C74 20 86 28 83 52 C80 42 72 36 60 36 C50 36 41 41 37 52 Z" fill="#9AA3AF"/><circle cx="51" cy="55" r="2.2" fill="#1B1B2F"/><circle cx="69" cy="55" r="2.2" fill="#1B1B2F"/><path d="M52 65 Q60 71 68 65" stroke="#1B1B2F" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="45" cy="62" r="4" fill="#E8707A" opacity=".22"/><circle cx="75" cy="62" r="4" fill="#E8707A" opacity=".22"/><g fill="none" stroke="#0E1F45" stroke-width="1.8"><circle cx="51" cy="55" r="6.6"/><circle cx="69" cy="55" r="6.6"/><path d="M57.6 55h4.8"/></g></symbol></defs></svg>
+  <header class="lp-header">
+    <div class="lp-wrap">
+      <div class="lp-brand"><svg width="40" height="26" viewBox="0 0 44 28" fill="none" aria-hidden="true"><circle cx="15" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.95"/><circle cx="29" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.5"/><path d="M1.5 14H14L18 4.5L23 23.5L27 14H42.5" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>VitaPulse</span></div>
+      <nav class="lp-nav">
+        <a href="#lp-practices">Practices</a><a href="#lp-features">Features</a><a href="#lp-how">How it works</a><a href="#lp-pricing">Pricing</a><a href="#lp-faq">FAQ</a>
+      </nav>
+      <div class="lp-actions">
+        <button type="button" class="btn secondary small" data-lp-go="login">Log in</button>
+        <button type="button" class="btn small" data-lp-go="signup">Create your clinic</button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="lp-wrap lp-hero">
+      <div>
+        <h1>Continuity of care, in one chart.</h1>
+        <p class="lp-lead">Charts, notes, scheduling, prescriptions, labs and billing &mdash; together in one calm workspace for your practice.</p>
+        <div class="lp-cta">
+          <button type="button" class="btn lp-lg" data-lp-go="signup">Create your clinic</button>
+          <button type="button" class="btn secondary lp-lg" data-lp-go="login">Log in</button>
+        </div>
+        <ul class="lp-checks lp-hero-points"><li>Every module included</li><li>Month-view scheduling</li><li>Works on phone, tablet and computer</li></ul>
+      </div>
+      
+<div class="lp-scene">
+  <svg class="lp-scene-svg" viewBox="0 0 560 500" aria-hidden="true">
+    <defs><clipPath id="sceneClip"><rect width="560" height="500" rx="34"/></clipPath></defs>
+    <g clip-path="url(#sceneClip)">
+      <rect width="560" height="500" fill="#E4F1F2"/>
+      <circle cx="330" cy="270" r="215" fill="#52ADB5"/>
+      <circle cx="96" cy="100" r="64" fill="#CFE6E9"/>
+      <circle cx="486" cy="86" r="22" fill="#CFE6E9"/>
+      <path d="M30 220 H120 L142 176 L170 262 L194 220 H290" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+      <g stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity=".8"><path d="M452 150v22M441 161h22"/><path d="M70 330v16M62 338h16"/></g>
+      <use href="#av-docf" x="50" y="190" width="310" height="310"/>
+      <use href="#av-james" x="270" y="250" width="250" height="250"/>
+    </g>
+  </svg>
+  <div class="lp-float a"><span class="dot"></span><div><b>Next visit</b><small>Tue · 10:30 AM · Telehealth</small></div></div>
+  <div class="lp-float b"><span class="chk">&#10003;</span><div><b>Chart updated</b><small>Vitals and note saved</small></div></div>
+</div>
+    </section>
+    <section class="lp-section" id="lp-practices">
+      <div class="lp-wrap">
+        <h2>Made for independent practices</h2>
+        <p class="lp-sub">Flexible notes and forms that fit the way your practice already works.</p>
+        <div class="lp-grid">
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>Family practice</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></div>Urgent care</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg></div>Internal medicine</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M6 21c0-3 3-5 6-5s6 2 6 5"/></svg></div>Pediatrics</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg></div>Mental health</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M12 3c4 3 6 6 6 9a6 6 0 0 1-12 0c0-3 2-6 6-9z"/></svg></div>Integrative medicine</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 12v9M9 17h6"/></svg></div>Women&rsquo;s health</div>
+          <div class="lp-card lp-practice"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M5 21V10M12 21V4M19 21v-8"/></svg></div>Weight-loss clinics</div>
+        </div>
+      </div>
+    </section>
+<section class="lp-section" id="lp-features">
+  <div class="lp-wrap">
+    <h2>See what a day in VitaPulse looks like</h2>
+    <p class="lp-sub">Everything below is part of the app today. The examples use sample data.</p>
+    <div class="lp-show">
+      <div class="lp-show-text"><h3>Every patient, one clear chart</h3><p>Open a patient and see what matters first: allergies, upcoming visits, vitals and what they owe. Everything else is one tap away.</p><ul class="lp-checks"><li>Vitals, medications, allergies and visit history</li><li>A photo on every chart</li><li>Upload an ID and insurance card</li></ul></div>
+      <div class="lp-show-media">
+<div class="lp-win">
+  <div class="lp-win-bar"><i></i><i></i><i></i><em>Sample data</em></div>
+  <div class="lp-chart-top"><svg class="lp-av sm" aria-hidden="true"><use href="#av-maria"/></svg><div><b>Maria Gonzalez</b><small>Born March 12, 1984 &middot; MRN-10231</small></div></div>
+  <div class="lp-chart-boxes">
+    <span class="b1"><b>Allergies</b>Penicillin</span><span class="b2"><b>Visits</b>Next: Tue, Oct 6</span>
+    <span class="b3"><b>Vitals</b>BP 128/82</span><span class="b4"><b>Balance</b>$120.00</span>
+  </div>
+  <div class="lp-chart-rows">
+    <div><span>Lisinopril</span><small>10 mg &middot; daily</small></div>
+    <div><span>Annual exam &mdash; SOAP note</span><small>Sep 4</small></div>
+    <div><span>ID &amp; insurance card</span><small>On file</small></div>
+  </div>
+</div></div></div><div class="lp-show rev">
+      <div class="lp-show-text"><h3>See the whole month at a glance</h3><p>Scroll through every month, not just this week. Days with visits stand out, and one tap shows who is coming and when.</p><ul class="lp-checks"><li>Full month calendar with visit markers</li><li>Morning and afternoon view for each day</li><li>Video links for telehealth visits</li></ul></div>
+      <div class="lp-show-media">
+<div class="lp-win">
+  <div class="lp-win-bar"><i></i><i></i><i></i><em>Sample data</em></div>
+  <div class="lp-mini-head">September 2026</div>
+  <div class="lp-mini-cal wk"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+  <div class="lp-mini-cal"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d">1</span><span class="d">2</span><span class="d">3</span><span class="d">4</span><span class="d">5</span><span class="d on">6</span><span class="d">7</span><span class="d">8</span><span class="d">9</span><span class="d">10</span><span class="d">11</span><span class="d">12</span><span class="d on">13</span><span class="d">14</span><span class="d">15</span><span class="d">16</span><span class="d">17</span><span class="d">18</span><span class="d">19</span><span class="d on">20</span><span class="d">21</span><span class="d on sel">22</span><span class="d">23</span><span class="d">24</span><span class="d">25</span><span class="d">26</span><span class="d on">27</span><span class="d">28</span><span class="d">29</span><span class="d">30</span></div>
+  <div class="lp-mini-day">
+    <div class="big"><b>22</b><span>September</span></div>
+    <div class="slots"><b>Morning</b><span class="chip">9:00 AM</span><span class="chip">10:30 AM</span></div>
+  </div>
+</div></div></div><div class="lp-show">
+      <div class="lp-show-text"><h3>Notes, forms and prescriptions without the paperwork</h3><p>Write SOAP notes, fill out forms and prescribe from the same place, and edit or delete anything when you need to.</p><ul class="lp-checks"><li>SOAP chart notes you can edit</li><li>Eight ready-to-use form templates</li><li>Allergy and duplicate-medication checks</li></ul></div>
+      <div class="lp-show-media">
+<div class="lp-win">
+  <div class="lp-win-bar"><i></i><i></i><i></i><em>Sample data</em></div>
+  <div class="lp-note">
+    <b>Chart note &mdash; Office visit</b>
+    <p><i>S</i>Follow-up for blood pressure. Feels well.</p>
+    <p><i>O</i>BP 128/82, HR 72.</p>
+    <p><i>A</i>Hypertension, stable.</p>
+    <p><i>P</i>Continue lisinopril 10 mg daily.</p>
+  </div>
+  <div class="lp-rx"><b>&#8478; Lisinopril 10 mg</b><span>&#10003; Checked against allergies and current medications</span></div>
+</div></div></div>
+  </div>
+</section><section class="lp-section" id="lp-more">
+      <div class="lp-wrap">
+        <h2>Everything your team needs</h2>
+        <p class="lp-sub">Every module is included. No add-ons, no tiers.</p>
+        <div class="lp-grid">
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div><h3>Patient charts</h3><p>Vitals, medications, allergies and visit history together on one page.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></div><h3>SOAP chart notes</h3><p>Write, edit and keep visit notes organized by patient.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg></div><h3>Forms</h3><p>Eight ready-to-use templates, from new-patient registration to consent.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/></svg></div><h3>Scheduling</h3><p>A full month calendar with every appointment, day by day.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></div><h3>Telehealth</h3><p>Video visit links for remote appointments.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M10.5 20.5a5 5 0 0 1-7-7l9-9a5 5 0 0 1 7 7z"/><path d="M8.5 8.5l7 7"/></svg></div><h3>e-Prescribe</h3><p>Write prescriptions with allergy and duplicate-therapy checks.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/><path d="M7.5 15h9"/></svg></div><h3>Labs &amp; imaging</h3><p>Order tests and record results right next to the chart.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M18 2l4 4M16 4l4 4M6 14l8-8 4 4-8 8H6zM3 21l3-3"/></svg></div><h3>Injections &amp; vaccines</h3><p>Log what was given, with dose, site and lot number.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><h3>Referrals</h3><p>Follow each specialist referral from sent to completed.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5C9.5 8.4 10.6 8 12 8s2.5.6 2.5 1.7c0 2.4-5 1.4-5 4 0 1.1 1.1 1.8 2.5 1.8s2.5-.5 2.5-1.7"/></svg></div><h3>Billing &amp; reports</h3><p>Follow charges from pending to paid, with a snapshot of team activity.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.5-1.5 5.5-1.5 6 0M14 10h4M14 14h4"/></svg></div><h3>ID &amp; insurance</h3><p>Upload an ID, an insurance card and a photo to each patient.</p></div>
+          <div class="lp-card"><div class="lp-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5c2.5 0 4.5 1.5 4.5 4.5"/></svg></div><h3>Team workspace</h3><p>Invite practitioners and staff to one shared clinic workspace.</p></div>
+        </div>
+      </div>
+    </section>
+<section class="lp-section" id="lp-how">
+  <div class="lp-wrap">
+    <h2>How a visit flows</h2>
+    <p class="lp-sub">From the front desk to the bill, in one workspace.</p>
+    <div class="lp-grid"><div class="lp-card lp-step"><svg class="lp-av lg" aria-hidden="true"><use href="#av-priya"/></svg><div class="lp-step-n">1</div><h3>Check in</h3><p>Add the patient with a photo, ID, insurance card and current medications.</p></div><div class="lp-card lp-step"><svg class="lp-av lg" aria-hidden="true"><use href="#av-docf"/></svg><div class="lp-step-n">2</div><h3>See the patient</h3><p>Record vitals and write the SOAP note while the chart is open.</p></div><div class="lp-card lp-step"><svg class="lp-av lg" aria-hidden="true"><use href="#av-docm"/></svg><div class="lp-step-n">3</div><h3>Order and prescribe</h3><p>Prescribe, order labs, log injections and send referrals.</p></div><div class="lp-card lp-step"><svg class="lp-av lg" aria-hidden="true"><use href="#av-staff"/></svg><div class="lp-step-n">4</div><h3>Close the loop</h3><p>Track the charge from pending to paid and book the next visit.</p></div>
+    </div>
+  </div>
+</section>
+<section class="lp-section">
+  <div class="lp-wrap">
+    <h2>Know every patient at a glance</h2>
+    <p class="lp-sub">A face, an allergy flag and the next visit, right in the list. These are sample patients, not real people.</p>
+    <div class="lp-grid lp-grid-3"><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-maria"/></svg><div><b>Maria Gonzalez</b><small>Age 41</small><span class="tag alert">Penicillin</span><small>Next: Tue, 10:30 AM</small></div></div><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-james"/></svg><div><b>James Turner</b><small>Age 53</small><span class="tag">No known allergies</span><small>Next: Thu, 2:00 PM</small></div></div><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-priya"/></svg><div><b>Priya Patel</b><small>Age 29</small><span class="tag alert">Latex</span><small>Next: none scheduled</small></div></div><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-omar"/></svg><div><b>Omar Haddad</b><small>Age 36</small><span class="tag">No known allergies</span><small>Next: Mon, 9:15 AM</small></div></div><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-linda"/></svg><div><b>Linda Chen</b><small>Age 67</small><span class="tag alert">Sulfa</span><small>Next: Fri, 11:00 AM</small></div></div><div class="lp-card lp-pcard"><svg class="lp-av lg" aria-hidden="true"><use href="#av-fatima"/></svg><div><b>Fatima Noor</b><small>Age 34</small><span class="tag">No known allergies</span><small>Next: Wed, 4:30 PM</small></div></div>
+    </div>
+  </div>
+</section>
+<section class="lp-section">
+  <div class="lp-wrap">
+    <h2>Built for your whole team</h2>
+    <p class="lp-sub">One shared workspace for everyone who works with your patients.</p>
+    <div class="lp-grid"><div class="lp-card lp-role"><svg class="lp-av lg" aria-hidden="true"><use href="#av-docf"/></svg><h3>Practitioners</h3><p>Chart, prescribe, order labs and review each patient&rsquo;s history.</p></div><div class="lp-card lp-role"><svg class="lp-av lg" aria-hidden="true"><use href="#av-staff"/></svg><h3>Front desk and staff</h3><p>Register patients, schedule visits, upload documents and keep tasks moving.</p></div><div class="lp-card lp-role"><svg class="lp-av lg" aria-hidden="true"><use href="#av-mgr"/></svg><h3>Clinic managers</h3><p>Create the clinic, invite the team and keep an eye on billing and activity.</p></div>
+    </div>
+  </div>
+</section>
+<section class="lp-section" id="lp-pricing">
+  <div class="lp-wrap">
+    <h2>Simple pricing</h2>
+    <p class="lp-sub">One price. Every module included.</p>
+    <div class="lp-card lp-price">
+      <div class="amt">$140</div>
+      <div class="per">per practitioner, per month</div>
+      <ul class="lp-checks center">
+        <li>Patients, notes, forms and scheduling</li><li>e-Prescribe, labs, injections and referrals</li><li>Billing, reports and team workspace</li>
+      </ul>
+      <button type="button" class="btn lp-lg" data-lp-go="signup">Create your clinic</button>
+    </div>
+  </div>
+</section>
+<section class="lp-section" id="lp-faq">
+  <div class="lp-wrap lp-narrow">
+    <h2>Questions, answered</h2>
+    <p class="lp-sub">Straight answers, including what VitaPulse can&rsquo;t do yet.</p><details class="lp-faq"><summary>Is VitaPulse HIPAA compliant?</summary><p>Not yet. VitaPulse is a demonstration workspace and has not been certified or audited for HIPAA. Please use sample data only until your practice has reviewed its compliance needs.</p></details><details class="lp-faq"><summary>Does e-Prescribe send prescriptions to real pharmacies?</summary><p>Not yet. You can write and track prescriptions and check them against a patient&rsquo;s allergies and current medications, but VitaPulse is not certified e-prescribing software and does not transmit to pharmacies.</p></details><details class="lp-faq"><summary>Is the telehealth video private?</summary><p>Each appointment gets its own video link, and anyone with the link can join, so share it only with the patient. The video service is not HIPAA certified.</p></details><details class="lp-faq"><summary>Can my whole team use it?</summary><p>Yes. The clinic manager creates the clinic and invites practitioners and staff from the Team page.</p></details><details class="lp-faq"><summary>What can I attach to a patient?</summary><p>A photo, an ID and an insurance card (images or PDFs, up to 5 MB each), plus forms and chart notes.</p></details><details class="lp-faq"><summary>Does it work on a phone?</summary><p>Yes. The layout adapts to phones, tablets and computers.</p></details>
+  </div>
+</section>
+<section class="lp-section">
+  <div class="lp-wrap">
+    <div class="lp-cta-band">
+      <div><h2>Ready to see your whole practice in one chart?</h2><p>Create your clinic in a minute and invite your team.</p>
+        <button type="button" class="btn lp-lg light" data-lp-go="signup">Create your clinic</button></div>
+      <div class="lp-band-avatars"><svg class="lp-av xl" aria-hidden="true"><use href="#av-docm"/></svg><svg class="lp-av xl" aria-hidden="true"><use href="#av-docf"/></svg></div>
+    </div>
+  </div>
+</section>
+  </main>
+  <footer class="lp-footer">
+    <div class="lp-wrap">
+      <div class="lp-foot-grid">
+        <div><div class="lp-brand"><svg width="40" height="26" viewBox="0 0 44 28" fill="none" aria-hidden="true"><circle cx="15" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.95"/><circle cx="29" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.5"/><path d="M1.5 14H14L18 4.5L23 23.5L27 14H42.5" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>VitaPulse</span></div><p>Continuity of care, in one chart.</p></div>
+        <div><b>Product</b><a href="#lp-features">Features</a><a href="#lp-how">How it works</a><a href="#lp-pricing">Pricing</a></div>
+        <div><b>Get started</b><a href="#" data-lp-go="login">Log in</a><a href="#" data-lp-go="signup">Create your clinic</a><a href="#lp-faq">FAQ</a></div>
+      </div>
+      <p>VitaPulse is a demonstration workspace. It is not certified electronic health record or e-prescribing software and is not HIPAA certified, so please don&rsquo;t enter real patient information yet. All people and patients shown on this page are illustrations and sample data.</p>
+    </div>
+  </footer>
+</div>
+
+<div id="authScreen" style="min-height:100vh; display:none; align-items:center; justify-content:center; padding:24px;">
   <div style="width:100%; max-width:380px; background:var(--surface); -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur)); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); padding:32px;">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
       <svg width="40" height="26" viewBox="0 0 44 28" fill="none" aria-hidden="true">
@@ -483,7 +1213,8 @@
       </svg>
       <span class="serif" style="font-size:22px; font-weight:700;">VitaPulse</span>
     </div>
-    <p style="font-size:13px; color:var(--text-muted); margin:0 0 24px;">Continuity of care, in one chart.</p>
+    <p style="font-size:13px; color:var(--text-muted); margin:0 0 14px;">Continuity of care, in one chart.</p>
+    <button type="button" id="authBackBtn" style="background:none; border:none; padding:0; margin:0 0 18px; color:var(--accent-strong); font-size:13px; font-weight:500;">&larr; Back to home</button>
 
     <div style="display:flex; gap:8px; margin-bottom:20px;">
       <button type="button" class="btn secondary" id="showLoginTab" style="flex:1;">Sign in</button>
@@ -509,6 +1240,7 @@
 </div>
 
 <div id="appShell" class="app-shell" style="display:none;">
+  <div class="nav-overlay" id="navOverlay"></div>
   <nav class="sidebar">
     <div>
       <div class="brand">
@@ -582,8 +1314,14 @@
 
   <div class="main">
     <div class="topbar">
-      <div class="topbar-date data" id="topbarDate"></div>
+      <div class="topbar-left">
+        <button type="button" class="launcher-btn" id="launcherBtn" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="1.7"/><circle cx="10" cy="4" r="1.7"/><circle cx="16" cy="4" r="1.7"/><circle cx="4" cy="10" r="1.7"/><circle cx="10" cy="10" r="1.7"/><circle cx="16" cy="10" r="1.7"/><circle cx="4" cy="16" r="1.7"/><circle cx="10" cy="16" r="1.7"/><circle cx="16" cy="16" r="1.7"/></svg></button>
+        <div class="top-brand"><svg width="34" height="22" viewBox="0 0 44 28" fill="none" aria-hidden="true"><circle cx="15" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.95"/><circle cx="29" cy="14" r="10" stroke="var(--accent)" stroke-width="2" opacity="0.5"/><path d="M1.5 14H14L18 4.5L23 23.5L27 14H42.5" stroke="var(--text)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>VitaPulse</span></div>
+        <div class="top-search" id="topSearchWrap"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.7"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input id="topSearch" type="search" placeholder="Search patients" autocomplete="off"></div>
+      </div>
       <div style="display:flex; align-items:center;">
+        <div class="topbar-date data" id="topbarDate"></div>
+        <div class="clinic-name" id="clinicName"></div>
         <div class="clinician">
           <div class="avatar" id="clinicianAvatar">Y</div>
           <span id="clinicianName">You</span>
@@ -606,8 +1344,14 @@
         <div class="hero">
           <h1 id="greeting" class="serif">Good afternoon, Dr. Torres.</h1>
           <p id="heroSub">Here's where today stands.</p>
+          <div class="hero-search">
+            <div class="hero-search-field"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.7"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input id="heroSearch" type="search" placeholder="Search patients" autocomplete="off"></div>
+            <button type="button" class="hero-go" id="heroGo" aria-label="Search"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="2"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            <button type="button" class="hero-add" id="heroAddPatient" aria-label="Add patient" title="Add patient"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="9" cy="7.5" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M2.8 18.5c.8-3.6 3.3-5.2 6.2-5.2 1.3 0 2.5.3 3.4.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M17 12.5v6M14 15.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+          </div>
         </div>
 
+        <h2 class="section-title">Quick access</h2>
         <div class="quick-grid">
           <button type="button" class="quick-tile" data-view="patients"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.6" r="3" stroke-width="1.6"/><path d="M3.8 17c1.3-3.6 3.4-5 6.2-5s4.9 1.4 6.2 5" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="quick-tile-label">Patients</span></button>
           <button type="button" class="quick-tile" data-view="chartnotes"><span class="quick-tile-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="4.5" y="3.2" width="11" height="14.4" rx="1.6" stroke-width="1.6"/><path d="M7 10.6l1.8 1.8L13 8.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="quick-tile-label">Chart Notes</span></button>
@@ -624,7 +1368,7 @@
 
         <div class="stat-row" id="statRow"></div>
 
-        <div class="panel">
+        <div class="panel panel-teal">
           <div class="panel-head"><h2>Today's schedule</h2><button class="btn small secondary" data-view="schedule">View full week</button></div>
           <div class="panel-body" id="todayList"></div>
         </div>
@@ -643,20 +1387,23 @@
 
       <!-- PATIENTS LIST -->
       <section class="view" id="view-patients">
+        <div class="page-head"><h1>Patients</h1><button type="button" class="btn" id="addPatientBtn">+ Patient</button></div>
         <div class="toolbar">
           <input class="search-input" id="patientSearch" placeholder="Search patients by name or MRN">
         </div>
-        <table class="table">
-          <thead><tr><th>Patient</th><th>MRN</th><th>Date of birth</th><th>Allergies</th><th>Next visit</th></tr></thead>
-          <tbody id="patientTableBody"></tbody>
-        </table>
+        <div class="table-card">
+          <table class="table">
+            <thead><tr><th>Record ID</th><th>Name</th><th>Date of birth</th><th>Allergies</th><th>Next visit</th></tr></thead>
+            <tbody id="patientTableBody"></tbody>
+          </table>
+        </div>
       </section>
 
       <!-- PATIENT DETAIL -->
       <section class="view" id="view-detail">
         <button class="back-link" data-view="patients">&larr; Back to patients</button>
-        <div class="detail-head">
-          <div style="display:flex; align-items:center; gap:14px;">
+        <div class="pt-strip">
+          <div class="pt-box pt-id">
             <button type="button" id="patientPhotoBtn" class="patient-photo" title="Click to upload a photo">
               <span id="patientPhotoInitials">?</span>
               <img id="patientPhotoImg" style="display:none;" alt="Patient photo">
@@ -667,16 +1414,31 @@
               <div class="detail-meta">Born <span id="detailDob"></span> · <span class="mrn" id="detailMrn"></span></div>
             </div>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn secondary" id="newChartNoteFromDetail">New chart note</button>
-            <button class="btn secondary" id="newFormFromDetail">New form</button>
-            <button class="btn" id="prescribeFromDetail">Prescribe for this patient</button>
-          </div>
+          <div class="pt-box pt-allergy"><b>Allergies</b><span id="stripAllergies">Not recorded</span></div>
+          <div class="pt-box pt-visits"><b>Visits</b>Last: <i id="stripLast">&mdash;</i><br>Next: <i id="stripNext">&mdash;</i></div>
+          <div class="pt-box pt-vitals"><b>Vitals</b>BP: <i id="stripBp">&mdash;</i><br>HR: <i id="stripHr">&mdash;</i></div>
+          <div class="pt-box pt-balance"><b>Balance due</b><i id="stripBalance">$0.00</i></div>
         </div>
-
+        <div class="pt-actions">
+          <button class="btn secondary" id="newChartNoteFromDetail">New chart note</button>
+          <button class="btn secondary" id="newFormFromDetail">New form</button>
+          <button class="btn" id="prescribeFromDetail">Prescribe for this patient</button>
+        </div>
+        <div class="pt-layout">
+          <nav class="pt-nav" id="ptNav">
+            <button type="button" class="active" data-sec="all">Overview</button>
+            <button type="button" data-sec="vitals">Vitals</button>
+            <button type="button" data-sec="notes">Chart notes</button>
+            <button type="button" data-sec="visits">Visit history</button>
+            <button type="button" data-sec="forms">Forms</button>
+            <button type="button" data-sec="allergies">Allergies</button>
+            <button type="button" data-sec="meds">Medications</button>
+            <button type="button" data-sec="docs">ID &amp; insurance</button>
+          </nav>
+          <div class="pt-main">
         <div class="grid-2">
           <div>
-            <div class="panel">
+            <div class="panel" data-sec="vitals">
               <div class="panel-head"><h2>Vitals — most recent visit</h2></div>
               <div class="panel-body">
                 <div class="vitals-grid" id="vitalsGrid"></div>
@@ -685,46 +1447,48 @@
               </div>
             </div>
 
-            <div class="panel">
+            <div class="panel" data-sec="notes">
               <div class="panel-head"><h2>Chart notes</h2></div>
               <div class="panel-body" id="patientChartNotes"></div>
             </div>
 
-            <div class="panel">
+            <div class="panel" data-sec="visits">
               <div class="panel-head"><h2>Visit history</h2></div>
               <div class="panel-body" id="visitHistory"></div>
             </div>
 
-            <div class="panel">
+            <div class="panel" data-sec="forms">
               <div class="panel-head"><h2>Forms on file</h2></div>
               <div class="panel-body" id="patientForms"></div>
             </div>
           </div>
 
           <div>
-            <div class="panel">
+            <div class="panel" data-sec="allergies">
               <div class="panel-head"><h2>Allergies</h2></div>
               <div class="panel-body"><div class="pill-list" id="allergyList"></div></div>
             </div>
-            <div class="panel">
+            <div class="panel" data-sec="meds">
               <div class="panel-head"><h2>Active medications</h2></div>
               <div class="panel-body" id="medList"></div>
             </div>
-            <div class="panel">
+            <div class="panel" data-sec="docs">
               <div class="panel-head"><h2>ID &amp; insurance</h2></div>
               <div class="panel-body" id="documentsPanel">
                 <div class="row-item">
                   <div class="row-main"><div class="row-title">ID document</div><div class="row-sub" id="idDocStatus">Not uploaded</div></div>
-                  <button type="button" class="btn small secondary" id="idDocBtn">Upload</button>
+                  <button type="button" class="btn small secondary" id="idDocView" style="display:none;">View</button><button type="button" class="btn small secondary" id="idDocBtn">Upload</button>
                   <input type="file" id="idDocInput" accept="image/*,application/pdf" style="display:none;">
                 </div>
                 <div class="row-item">
                   <div class="row-main"><div class="row-title">Insurance card</div><div class="row-sub" id="insuranceDocStatus">Not uploaded</div></div>
-                  <button type="button" class="btn small secondary" id="insuranceDocBtn">Upload</button>
+                  <button type="button" class="btn small secondary" id="insuranceDocView" style="display:none;">View</button><button type="button" class="btn small secondary" id="insuranceDocBtn">Upload</button>
                   <input type="file" id="insuranceDocInput" accept="image/*,application/pdf" style="display:none;">
                 </div>
               </div>
             </div>
+          </div>
+        </div>
           </div>
         </div>
       </section>
@@ -743,9 +1507,13 @@
         <p style="font-size:12.5px;color:var(--text-muted);margin:-8px 0 18px;">Telehealth visits get a "Join video" link, powered by the free Jitsi Meet service — anyone with the link can join, so share it only with the patient.</p>
         <div class="calendar-weekdays" id="calendarWeekdays"></div>
         <div class="calendar-grid" id="calendarGrid"></div>
-        <div class="panel" style="margin-top:18px;">
-          <div class="panel-head"><h2 id="selectedDayLabel">Today</h2></div>
-          <div class="panel-body" id="selectedDayList"></div>
+        <div class="cal-legend"><span><i style="background:var(--accent)"></i>Has visits</span><span><i style="background:var(--navy)"></i>Selected day</span></div>
+        <div class="day-panel">
+          <div class="day-panel-head">
+            <div class="day-big"><b id="dayBigNum">00</b><span id="dayBigMonth">Month</span><small id="dayBigWeekday"></small></div>
+            <div class="day-slots" id="daySlots"></div>
+          </div>
+          <div class="day-list" id="selectedDayList"></div>
         </div>
       </section>
 
@@ -1186,6 +1954,7 @@
     authToken = null;
     currentUser = null;
     document.getElementById("appShell").style.display = "none";
+    document.getElementById("landing").style.display = "none";
     document.getElementById("authScreen").style.display = "flex";
   }
 
@@ -1259,6 +2028,8 @@
     if (target) target.classList.add("active");
     var navBtns = document.querySelectorAll(".nav-btn");
     for (var j = 0; j < navBtns.length; j++) navBtns[j].classList.toggle("active", navBtns[j].getAttribute("data-view") === name);
+    document.body.classList.toggle("is-home", name === "dashboard");
+    document.body.classList.remove("nav-open");
     window.scrollTo(0, 0);
   }
   function currentViewId() {
@@ -1351,6 +2122,8 @@
     var avatarEl = document.getElementById("clinicianAvatar");
     avatarEl.textContent = initials;
     avatarEl.style.background = "var(--accent)";
+    var clinicLabel = currentUser.clinicName || (currentUser.clinic && currentUser.clinic.name) || "";
+    document.getElementById("clinicName").textContent = clinicLabel;
   }
 
   // ============================================================
@@ -1415,6 +2188,7 @@
   });
 
   function startApp() {
+    document.getElementById("landing").style.display = "none";
     document.getElementById("authScreen").style.display = "none";
     document.getElementById("appShell").style.display = "flex";
     renderIdentity();
@@ -1494,12 +2268,19 @@
   // ============================================================
   // Patients
   // ============================================================
+  function escText(v) { return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function safePhoto(src) { return (typeof src === "string" && /^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/.test(src)) ? src : ""; }
+  function avatarInner(p) {
+    var photo = safePhoto(p.photo);
+    if (photo) return '<img src="' + photo + '" alt="">';
+    return escText((p.name || "?").trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join("").toUpperCase() || "?");
+  }
   function renderPatients(filter) {
     var body = document.getElementById("patientTableBody");
     var q = (filter || "").toLowerCase();
     var list = state.patients.filter(function (p) { return !q || p.name.toLowerCase().indexOf(q) > -1 || (p.mrn || "").toLowerCase().indexOf(q) > -1; });
     if (!list.length) {
-      body.innerHTML = '<tr><td colspan="5"><div class="empty-state">' + (state.patients.length ? "No patients match that search." : "No patients yet — add one from Forms.") + '</div></td></tr>';
+      body.innerHTML = '<tr><td colspan="5"><div class="empty-state">' + (state.patients.length ? "No patients match that search." : "No patients yet — tap + Patient to add one.") + '</div></td></tr>';
       return;
     }
     body.innerHTML = list.map(function (p) {
@@ -1507,7 +2288,7 @@
         .sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); })[0];
       var allergyHtml = (p.allergies && p.allergies.length) ? p.allergies.map(function (a) { return '<span class="tag alert">' + a + '</span>'; }).join(" ") : '<span class="tag">None known</span>';
       return '<tr class="clickable" data-open="' + p.id + '">' +
-        '<td class="patient-name">' + p.name + '</td>' + '<td class="mrn">' + p.mrn + '</td>' + '<td>' + fmtDob(p.dob) + '</td>' + '<td>' + allergyHtml + '</td>' +
+        '<td><span class="row-avatar">' + avatarInner(p) + '</span><span class="mrn">' + p.mrn + '</span></td>' + '<td class="patient-name">' + p.name + '</td>' + '<td>' + fmtDob(p.dob) + '</td>' + '<td>' + allergyHtml + '</td>' +
         '<td>' + (next ? fmtDate(next.date) + ' · ' + fmtTime(next.time) : '<span class="row-sub">None scheduled</span>') + '</td></tr>';
     }).join("");
   }
@@ -1528,6 +2309,22 @@
     if (p.photo) { photoImg.src = p.photo; photoImg.style.display = ""; photoInitials.style.display = "none"; }
     else { photoImg.style.display = "none"; photoInitials.style.display = ""; photoInitials.textContent = initials; }
 
+    var todayIsoStrip = isoDate(daysFromToday(0));
+    var pAppts = state.appointments.filter(function (a) { return a.patientId === p.id; });
+    var lastAppt = pAppts.filter(function (a) { return a.date < todayIsoStrip; }).sort(function (a, b) { return (b.date + b.time).localeCompare(a.date + a.time); })[0];
+    var nextAppt = pAppts.filter(function (a) { return a.date >= todayIsoStrip; }).sort(function (a, b) { return (a.date + a.time).localeCompare(b.date + b.time); })[0];
+    document.getElementById("stripLast").textContent = lastAppt ? fmtDate(lastAppt.date) : "—";
+    document.getElementById("stripNext").textContent = nextAppt ? fmtDate(nextAppt.date) : "—";
+    document.getElementById("stripAllergies").textContent = (p.allergies && p.allergies.length) ? p.allergies.join(", ") : "Not recorded";
+    var sv = (p.vitals && Object.keys(p.vitals).length) ? p.vitals : {};
+    document.getElementById("stripBp").textContent = sv.bp || "—";
+    document.getElementById("stripHr").textContent = sv.hr || "—";
+    var balance = state.charges.filter(function (c) { return c.patientId === p.id && c.status !== "Paid"; })
+      .reduce(function (sum, c) { return sum + (parseFloat(String(c.amount).replace(/[^0-9.\-]/g, "")) || 0); }, 0);
+    document.getElementById("stripBalance").textContent = "$" + balance.toFixed(2);
+
+    document.getElementById("idDocView").style.display = p.idDocumentName ? "" : "none";
+    document.getElementById("insuranceDocView").style.display = p.insuranceDocumentName ? "" : "none";
     document.getElementById("idDocStatus").textContent = p.idDocumentName ? p.idDocumentName : "Not uploaded";
     document.getElementById("idDocBtn").textContent = p.idDocumentName ? "Replace" : "Upload";
     document.getElementById("insuranceDocStatus").textContent = p.insuranceDocumentName ? p.insuranceDocumentName : "Not uploaded";
@@ -1561,10 +2358,45 @@
     });
   }
 
+  function resizeImageToDataUrl(file, maxDim) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) { reject(new Error("Please choose an image file.")); return; }
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", 0.85));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("Couldn't read that image.")); };
+      img.src = url;
+    });
+  }
+  function viewPatientDocument(field, nameField) {
+    if (!currentPatientId) return;
+    var win = window.open("", "_blank");
+    apiFetch("/patients/" + currentPatientId).then(function (full) {
+      var dataUrl = full && full[field];
+      if (!dataUrl) { if (win) win.close(); showToast("No file found."); return; }
+      var parts = dataUrl.split(",");
+      var mime = (parts[0].match(/data:([^;]+)/) || [])[1] || "application/octet-stream";
+      var bin = atob(parts[1]); var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      var blobUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+      if (win) { win.location = blobUrl; } else { showToast("Allow pop-ups to open the file."); }
+    }).catch(function () { if (win) win.close(); showToast("Couldn't open the file — please try again."); });
+  }
+  document.getElementById("idDocView").addEventListener("click", function () { viewPatientDocument("idDocument"); });
+  document.getElementById("insuranceDocView").addEventListener("click", function () { viewPatientDocument("insuranceDocument"); });
+
   document.getElementById("patientPhotoBtn").addEventListener("click", function () { document.getElementById("patientPhotoInput").click(); });
   document.getElementById("patientPhotoInput").addEventListener("change", function (e) {
     var file = e.target.files[0]; if (!file || !currentPatientId) return;
-    readFileAsDataUrl(file).then(function (dataUrl) {
+    resizeImageToDataUrl(file, 320).then(function (dataUrl) {
       return apiFetch("/patients/" + currentPatientId, { method: "PATCH", body: JSON.stringify({ photo: dataUrl }) });
     }).then(function () {
       showToast("Photo updated.");
@@ -1597,9 +2429,19 @@
       .finally(function () { e.target.value = ""; });
   });
 
+  function setPatientSection(sec) {
+    var btns = document.querySelectorAll("#ptNav [data-sec]");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("active", btns[i].getAttribute("data-sec") === sec);
+    var panels = document.querySelectorAll("#view-detail .panel[data-sec]");
+    for (var j = 0; j < panels.length; j++) panels[j].style.display = (sec === "all" || panels[j].getAttribute("data-sec") === sec) ? "" : "none";
+  }
+  document.getElementById("ptNav").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-sec]"); if (b) setPatientSection(b.getAttribute("data-sec"));
+  });
   function openPatient(id) {
     currentPatientId = id;
     renderPatientDetail(id);
+    setPatientSection("all");
     showView("detail");
   }
   function drawTrend(values) {
@@ -1747,6 +2589,7 @@
       if (iso === todayIso) classes += " is-today";
       if (iso === selectedCalendarDay) classes += " selected";
       var dot = apptCountByDay[iso] ? '<span class="cal-dot"></span>' : "";
+      if (apptCountByDay[iso]) classes += " has-appt";
       cells.push('<button type="button" class="' + classes + '" data-day="' + iso + '">' + d + dot + '</button>');
     }
     document.getElementById("calendarGrid").innerHTML = cells.join("");
@@ -1757,14 +2600,24 @@
   function renderSelectedDay() {
     var iso = selectedCalendarDay;
     var d = new Date(iso + "T00:00:00");
-    document.getElementById("selectedDayLabel").textContent = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    document.getElementById("dayBigNum").textContent = String(d.getDate()).padStart(2, "0");
+    document.getElementById("dayBigMonth").textContent = d.toLocaleDateString(undefined, { month: "long" });
+    document.getElementById("dayBigWeekday").textContent = d.toLocaleDateString(undefined, { weekday: "long" });
     var dayAppts = state.appointments.filter(function (a) { return a.date === iso; }).sort(function (a, b) { return a.time.localeCompare(b.time); });
-    document.getElementById("selectedDayList").innerHTML = dayAppts.length ? dayAppts.map(function (a) {
+    var groups = [
+      { label: "Morning", list: dayAppts.filter(function (a) { return a.time < "12:00"; }) },
+      { label: "Afternoon", list: dayAppts.filter(function (a) { return a.time >= "12:00" && a.time < "18:00"; }) },
+      { label: "Evening", list: dayAppts.filter(function (a) { return a.time >= "18:00"; }) }
+    ].filter(function (g) { return g.list.length; });
+    document.getElementById("daySlots").innerHTML = groups.length ? groups.map(function (g) {
+      return '<div class="slot-group"><b>' + g.label + '</b><div class="slot-times">' + g.list.map(function (a) { return '<span class="slot-chip busy">' + fmtTime(a.time) + '</span>'; }).join("") + '</div></div>';
+    }).join("") : '<div class="slot-empty">No visits scheduled for this day.</div>';
+    document.getElementById("selectedDayList").innerHTML = dayAppts.map(function (a) {
       var p = patientById(a.patientId);
       return '<div class="row-item"><div class="row-icon">' + apptTypeIconHtml(a.type) + '</div><div class="row-time data">' + fmtTime(a.time) + '</div>' +
         '<div class="row-main"><div class="row-title">' + (p ? p.name : "Unknown patient") + '</div><div class="row-sub">' + a.reason + '</div></div>' +
         '<span class="tag">' + a.type + '</span>' + joinVideoButtonHtml(a) + '</div>';
-    }).join("") : '<div class="empty-state">No visits scheduled.</div>';
+    }).join("");
   }
 
   document.getElementById("calendarGrid").addEventListener("click", function (e) {
@@ -2334,13 +3187,56 @@
   // ============================================================
   // Init
   // ============================================================
+  // ============================================================
+  // Menu drawer, search boxes, add-patient shortcuts
+  // ============================================================
+  document.getElementById("launcherBtn").addEventListener("click", function () { document.body.classList.toggle("nav-open"); });
+  document.getElementById("navOverlay").addEventListener("click", function () { document.body.classList.remove("nav-open"); });
+  function goSearch(value) {
+    document.getElementById("patientSearch").value = value;
+    showView("patients");
+    renderPatients(value);
+    var top = document.getElementById("topSearch");
+    top.value = value; top.focus(); top.setSelectionRange(value.length, value.length);
+  }
+  ["topSearch", "heroSearch"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", function (e) {
+      if (e.target.value.trim()) goSearch(e.target.value);
+      else if (currentViewId() === "view-patients") { document.getElementById("patientSearch").value = ""; renderPatients(""); }
+    });
+  });
+  document.getElementById("heroGo").addEventListener("click", function () { goSearch(document.getElementById("heroSearch").value); });
+  document.getElementById("heroSearch").addEventListener("keydown", function (e) { if (e.key === "Enter") goSearch(e.target.value); });
+  function startNewPatient() { formReturnTo = null; pendingPatientId = null; openFormTemplate("new-patient"); }
+  document.getElementById("addPatientBtn").addEventListener("click", startNewPatient);
+  document.getElementById("heroAddPatient").addEventListener("click", startNewPatient);
+
+  // ============================================================
+  // Landing page wiring
+  // ============================================================
+  function showLanding() {
+    document.getElementById("landing").style.display = "";
+    document.getElementById("authScreen").style.display = "none";
+    window.scrollTo(0, 0);
+  }
+  function showAuth(mode) {
+    document.getElementById("landing").style.display = "none";
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById(mode === "signup" ? "showSignupTab" : "showLoginTab").click();
+    window.scrollTo(0, 0);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-lp-go]"), function (el) {
+    el.addEventListener("click", function (e) { e.preventDefault(); showAuth(el.getAttribute("data-lp-go")); });
+  });
+  document.getElementById("authBackBtn").addEventListener("click", showLanding);
+
   var saved = loadAuthFromStorage();
   if (saved && saved.token) {
     authToken = saved.token;
     currentUser = saved.user;
     startApp();
   } else {
-    document.getElementById("authScreen").style.display = "flex";
+    showLanding();
   }
 })();
 </script>
