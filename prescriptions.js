@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../lib/prisma");
 const { requireAuth } = require("../middleware/auth");
+const { pickDate } = require("../utils/dates");
 
 const router = express.Router();
 router.use(requireAuth);
@@ -40,7 +41,7 @@ router.post("/", async (req, res) => {
       freq: freq || "",
       qty: qty || "Not specified",
       pharmacy: pharmacy || "",
-      date: todayIso(),
+      date: pickDate(req.body.date),
       createdById: req.userId
     }
   });

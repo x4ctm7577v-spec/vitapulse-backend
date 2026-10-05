@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../lib/prisma");
 const { requireAuth } = require("../middleware/auth");
+const { pickDate } = require("../utils/dates");
 
 const router = express.Router();
 router.use(requireAuth);
@@ -34,7 +35,7 @@ router.post("/", async (req, res) => {
   if (!patient) return res.status(404).json({ error: "Patient not found in this clinic" });
 
   const form = await prisma.formSubmission.create({
-    data: { clinicId: req.clinicId, patientId, templateId, templateName, data: data || {}, date: todayIso(), createdById: req.userId }
+    data: { clinicId: req.clinicId, patientId, templateId, templateName, data: data || {}, date: pickDate(req.body.date), createdById: req.userId }
   });
   res.status(201).json(form);
 });

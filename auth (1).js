@@ -14,24 +14,38 @@ function signToken(user) {
   );
 }
 
-function publicUser(user) {
-  return { id: user.id, name: user.name, email: user.email, role: user.role, clinicId: user.clinicId };
+function publicUser(user, clinic) {
+  const c = clinic || user.clinic;
+  return { id: user.id, name: user.name, email: user.email, role: user.role, clinicId: user.clinicId, clinicName: c ? c.name : undefined };
 }
+
+// Emails are matched without regard to upper/lower case (phones often capitalise
+// the first letter), and stored in lower case.
+const cleanText = (v) => (typeof v === "string" ? v.trim() : "");
+const cleanEmail = (v) => cleanText(v).toLowerCase();
+const findByEmail = (email) =>
+  prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } }, include: { clinic: true } });
 
 // POST /auth/signup
 // The FIRST person from a clinic to sign up creates the clinic itself and
 // becomes its "owner" (the manager). Everyone else joins that same clinic
 // via /auth/invite, never through /auth/signup again.
 router.post("/signup", async (req, res) => {
-  const { clinicName, name, email, password } = req.body;
+  const clinicName = cleanText(req.body.clinicName);
+  const name = cleanText(req.body.name);
+  const email = cleanEmail(req.body.email);
+  const password = typeof req.body.password === "string" ? req.body.password : "";
   if (!clinicName || !name || !email || !password) {
     return res.status(400).json({ error: "clinicName, name, email and password are required" });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Please enter a valid email address" });
   }
   if (password.length < 8) {
     return res.status(400).json({ error: "Password must be at least 8 characters" });
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await findByEmail(email);
   if (existing) return res.status(409).json({ error: "An account with that email already exists" });
 
   const clinic = await prisma.clinic.create({ data: { name: clinicName } });
@@ -40,19 +54,28 @@ router.post("/signup", async (req, res) => {
     data: { clinicId: clinic.id, email, passwordHash, name, role: "owner" }
   });
 
-  res.status(201).json({ token: signToken(user), user: publicUser(user), clinic });
+  res.status(201).json({ token: signToken(user), user: publicUser(user, clinic), clinic });
 });
 
 // POST /auth/invite  (owner only)
 // Adds a teammate — practitioner or staff — to the SAME clinic, with the
 // same access to its patients, schedule, labs and billing.
 router.post("/invite", requireAuth, requireRole("owner"), async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const name = cleanText(req.body.name);
+  const email = cleanEmail(req.body.email);
+  const password = typeof req.body.password === "string" ? req.body.password : "";
+  const role = req.body.role;
   if (!name || !email || !password) {
     return res.status(400).json({ error: "name, email and password are required" });
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Please enter a valid email address" });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters" });
+  }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await findByEmail(email);
   if (existing) return res.status(409).json({ error: "An account with that email already exists" });
 
   const passwordHash = await hashPassword(password);
@@ -65,10 +88,11 @@ router.post("/invite", requireAuth, requireRole("owner"), async (req, res) => {
 
 // POST /auth/login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const email = cleanEmail(req.body.email);
+  const password = typeof req.body.password === "string" ? req.body.password : "";
   if (!email || !password) return res.status(400).json({ error: "email and password are required" });
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await findByEmail(email);
   if (!user) return res.status(401).json({ error: "Invalid email or password" });
 
   const ok = await verifyPassword(password, user.passwordHash);
@@ -79,7 +103,7 @@ router.post("/login", async (req, res) => {
 
 // GET /auth/me — handy for the frontend to check "am I still logged in".
 router.get("/me", requireAuth, async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.userId } });
+  const user = await prisma.user.findUnique({ where: { id: req.userId }, include: { clinic: true } });
   if (!user) return res.status(404).json({ error: "Not found" });
   res.json({ user: publicUser(user) });
 });

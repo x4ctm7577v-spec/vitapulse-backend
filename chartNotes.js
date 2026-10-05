@@ -1,6 +1,7 @@
 const express = require("express");
 const prisma = require("../lib/prisma");
 const { requireAuth } = require("../middleware/auth");
+const { pickDate } = require("../utils/dates");
 
 const router = express.Router();
 router.use(requireAuth);
@@ -29,7 +30,7 @@ router.post("/", async (req, res) => {
   const note = await prisma.chartNote.create({
     data: {
       clinicId: req.clinicId, patientId,
-      type: type || "Office visit", date: date || todayIso(),
+      type: type || "Office visit", date: pickDate(date),
       subjective: subjective || "", objective: objective || "", assessment: assessment || "", plan: plan || "",
       createdById: req.userId
     }
