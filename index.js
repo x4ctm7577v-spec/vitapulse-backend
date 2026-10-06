@@ -73,7 +73,7 @@ app.post("/billing/webhook", express.raw({ type: "application/json" }), handleSt
 
 app.use(express.json({ limit: "12mb" }));
 
-app.get("/health", (req, res) => res.json({ ok: true, service: "vitapulse-api" }));
+app.get("/health", (req, res) => res.json({ ok: true, service: "vitapulse-api", apiVersion: 3, features: ["photos", "documents", "delete", "local-dates"] }));
 
 app.use("/auth", authRoutes);
 app.use("/patients", patientRoutes);
